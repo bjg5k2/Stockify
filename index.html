@@ -1,21 +1,105 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Music Stock Market</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    table {
-      border-collapse: collapse;
-      width: 50%;
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #e8f5e9;
+      color: #333;
+      margin: 0;
+      padding: 0;
     }
-    th, td {
-      border: 1px solid #333;
-      padding: 5px 10px;
+
+    header {
+      background-color: #a5d6a7;
+      color: #fff;
+      padding: 2rem;
       text-align: center;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
+
+    main {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background-color: #fff;
+      border-radius: 20px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    }
+
+    h1, h2 {
+      margin-top: 0;
+    }
+
+    .credits {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    .artist-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding: 0.5rem 1rem;
+      background-color: #f1f8f1;
+      border-radius: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .artist-section p {
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .artist-section button {
+      margin-left: 0.5rem;
+      padding: 0.4rem 0.8rem;
+      border: none;
+      border-radius: 12px;
+      background-color: #81c784;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .artist-section button:hover {
+      background-color: #66bb6a;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    th, td {
+      padding: 0.8rem;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #a5d6a7;
+      color: #fff;
+      border-radius: 10px 10px 0 0;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f6f9f6;
+    }
+
     .up {
       color: green;
       font-weight: bold;
     }
+
     .down {
       color: red;
       font-weight: bold;
@@ -23,117 +107,136 @@
   </style>
 </head>
 <body>
-  <h1>Welcome to the Music Stock Market</h1>
+  <header>
+    <h1>🎵 Music Stock Market</h1>
+    <p>Invest in your favorite artists and watch your portfolio grow!</p>
+  </header>
 
-  <!-- Display user credits -->
-  <p>Your credits: <span id="credits">1000</span></p>
+  <main>
+    <p class="credits">Your credits: <span id="credits">1000</span></p>
 
-  <!-- Artist stock prices -->
-  <h2>Artists</h2>
-  <p>Ariana Grande: <span id="price-ariana">100</span> credits per share</p>
-  <button onclick="buyArtist('Ariana Grande', 100)">Buy 100 credits</button>
-  <button onclick="sellArtist('Ariana Grande', 100)">Sell 100 credits</button>
+    <h2>Artists</h2>
 
-  <p>Drake: <span id="price-drake">100</span> credits per share</p>
-  <button onclick="buyArtist('Drake', 100)">Buy 100 credits</button>
-  <button onclick="sellArtist('Drake', 100)">Sell 100 credits</button>
+    <div class="artist-section">
+      <p>Ariana Grande: <span id="price-ariana">100</span> credits per share</p>
+      <div>
+        <button onclick="buyArtist('Ariana Grande', 100)">Buy 100</button>
+        <button onclick="sellArtist('Ariana Grande', 100)">Sell 100</button>
+      </div>
+    </div>
 
-  <!-- Display portfolio -->
-  <h2>Your Portfolio</h2>
-  <table id="portfolioTable">
-    <thead>
-      <tr>
-        <th>Artist</th>
-        <th>Invested</th>
-        <th>Current Value</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Rows inserted by JavaScript -->
-    </tbody>
-  </table>
+    <div class="artist-section">
+      <p>Drake: <span id="price-drake">100</span> credits per share</p>
+      <div>
+        <button onclick="buyArtist('Drake', 100)">Buy 100</button>
+        <button onclick="sellArtist('Drake', 100)">Sell 100</button>
+      </div>
+    </div>
+
+    <h2>Your Portfolio</h2>
+    <table id="portfolioTable">
+      <thead>
+        <tr>
+          <th>Artist</th>
+          <th>Invested</th>
+          <th>Current Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Portfolio rows inserted here -->
+      </tbody>
+    </table>
+  </main>
 
   <script>
-    // Starting credits
+    // ----------- User Data -----------
     let credits = 1000;
+    let portfolio = { "Ariana Grande": 0, "Drake": 0 };
+    let prices = { "Ariana Grande": 100, "Drake": 100 };
 
-    // Portfolio: investments per artist
-    let portfolio = {
-      "Ariana Grande": 0,
-      "Drake": 0
+    // ----------- Spotify Setup -----------
+    const accessToken = "<PASTE_YOUR_SPOTIFY_TOKEN_HERE>";
+    const artists = {
+      "Ariana Grande": "0C8ZW7JHO19nR1t6Y27Bhw",
+      "Drake": "3TVXtAsR1Inumwj472S9r4"
     };
 
-    // Stock prices (credits per share)
-    let prices = {
-      "Ariana Grande": 100,
-      "Drake": 100
-    };
+    async function fetchFollowers(artistId) {
+      try {
+        const res = await fetch(`https://api.spotify.com/v1/artists/${artistId}`, {
+          headers: { 'Authorization': `Bearer ${accessToken}` }
+        });
+        const data = await res.json();
+        return data.followers.total;
+      } catch (err) {
+        console.error("Error fetching followers:", err);
+        return null;
+      }
+    }
 
-    // Buy function
+    async function updateStockPrices() {
+      for (let name in artists) {
+        const followers = await fetchFollowers(artists[name]);
+        if (followers) prices[name] = followers / 1000000;
+      }
+      updateDisplay();
+    }
+
+    // ----------- Buy/Sell Functions -----------
     function buyArtist(name, amount) {
       if (credits >= amount) {
         credits -= amount;
         portfolio[name] += amount;
         updateDisplay();
-      } else {
-        alert("Not enough credits!");
-      }
+      } else alert("Not enough credits!");
     }
 
-    // Sell function
     function sellArtist(name, amount) {
       if (portfolio[name] >= amount) {
         credits += amount;
         portfolio[name] -= amount;
         updateDisplay();
-      } else {
-        alert("You don't have that much invested!");
-      }
+      } else alert("You don't have that much invested!");
     }
 
-    // Update displayed credits and portfolio table
+    // ----------- Display Function -----------
     function updateDisplay() {
       document.getElementById('credits').innerText = credits;
 
-      let tbody = document.getElementById('portfolioTable').querySelector('tbody');
+      const tbody = document.getElementById('portfolioTable').querySelector('tbody');
       tbody.innerHTML = '';
 
       for (let artist in portfolio) {
-        let invested = portfolio[artist];
-        let price = prices[artist];
-        let value = invested * price / 100;
+        const invested = portfolio[artist];
+        const value = invested * (prices[artist] / 100);
 
-        let row = document.createElement('tr');
+        const row = document.createElement('tr');
 
-        let cellArtist = document.createElement('td');
+        const cellArtist = document.createElement('td');
         cellArtist.innerText = artist;
         row.appendChild(cellArtist);
 
-        let cellInvested = document.createElement('td');
+        const cellInvested = document.createElement('td');
         cellInvested.innerText = invested;
         row.appendChild(cellInvested);
 
-        let cellValue = document.createElement('td');
+        const cellValue = document.createElement('td');
         cellValue.innerText = value.toFixed(2);
-
-        // Color code: green if value > invested, red if < invested
-        if (value > invested) {
-          cellValue.classList.add('up');
-        } else if (value < invested) {
-          cellValue.classList.add('down');
-        }
-
+        if (value > invested) cellValue.classList.add('up');
+        else if (value < invested) cellValue.classList.add('down');
         row.appendChild(cellValue);
+
         tbody.appendChild(row);
+
+        const priceSpan = document.getElementById(`price-${artist.toLowerCase().replace(/\s/g,'')}`);
+        if (priceSpan) priceSpan.innerText = prices[artist].toFixed(2);
       }
     }
 
-    // Initial display
+    // ----------- Initial Setup -----------
     updateDisplay();
+    updateStockPrices();
+    setInterval(updateStockPrices, 60000);
   </script>
 </body>
 </html>
-
-
-
-
