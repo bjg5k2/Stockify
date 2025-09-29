@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Music Stock Market</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -24,7 +25,7 @@
     }
 
     main {
-      max-width: 800px;
+      max-width: 900px;
       margin: 2rem auto;
       padding: 1rem;
       background-color: #fff;
@@ -104,6 +105,14 @@
       color: red;
       font-weight: bold;
     }
+
+    #chartContainer {
+      margin-top: 2rem;
+      padding: 1rem;
+      background-color: #f1f8f1;
+      border-radius: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
   </style>
 </head>
 <body>
@@ -146,6 +155,10 @@
         <!-- Portfolio rows inserted here -->
       </tbody>
     </table>
+
+    <div id="chartContainer">
+      <canvas id="portfolioChart" width="800" height="400"></canvas>
+    </div>
   </main>
 
   <script>
@@ -153,6 +166,7 @@
     let credits = 1000;
     let portfolio = { "Ariana Grande": 0, "Drake": 0 };
     let prices = { "Ariana Grande": 100, "Drake": 100 };
+    let portfolioHistory = []; // Store portfolio value over time
 
     // ----------- Spotify Setup -----------
     const accessToken = "<PASTE_YOUR_SPOTIFY_TOKEN_HERE>";
@@ -180,6 +194,7 @@
         if (followers) prices[name] = followers / 1000000;
       }
       updateDisplay();
+      updatePortfolioHistory();
     }
 
     // ----------- Buy/Sell Functions -----------
@@ -188,6 +203,7 @@
         credits -= amount;
         portfolio[name] += amount;
         updateDisplay();
+        updatePortfolioHistory();
       } else alert("Not enough credits!");
     }
 
@@ -196,6 +212,7 @@
         credits += amount;
         portfolio[name] -= amount;
         updateDisplay();
+        updatePortfolioHistory();
       } else alert("You don't have that much invested!");
     }
 
@@ -233,10 +250,52 @@
       }
     }
 
+    // ----------- Portfolio Chart -----------
+    const ctx = document.getElementById('portfolioChart').getContext('2d');
+    const chartData = {
+      labels: [],
+      datasets: [{
+        label: 'Portfolio Value',
+        data: [],
+        borderColor: '#66bb6a',
+        backgroundColor: 'rgba(102, 187, 106, 0.2)',
+        fill: true,
+        tension: 0.3
+      }]
+    };
+
+    const portfolioChart = new Chart(ctx, {
+      type: 'line',
+      data: chartData,
+      options: {
+        responsive: true,
+        plugins: { legend: { display: true } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+
+    function getPortfolioValue() {
+      let total = credits;
+      for (let artist in portfolio) {
+        total += portfolio[artist] * (prices[artist] / 100);
+      }
+      return total;
+    }
+
+    function updatePortfolioHistory() {
+      const now = new Date();
+      const timeLabel = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+      const value = getPortfolioValue();
+
+      chartData.labels.push(timeLabel);
+      chartData.datasets[0].data.push(value);
+      portfolioChart.update();
+    }
+
     // ----------- Initial Setup -----------
     updateDisplay();
     updateStockPrices();
-    setInterval(updateStockPrices, 60000);
+    setInterval(updateStockPrices, 60000); // refresh every minute
   </script>
 </body>
 </html>
