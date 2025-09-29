@@ -32,5 +32,108 @@
   <h2>Artists</h2>
   <p>Ariana Grande: <span id="price-ariana">100</span> credits per share</p>
   <button onclick="buyArtist('Ariana Grande', 100)">Buy 100 credits</button>
+  <button onclick="sellArtist('Ariana Grande', 100)">Sell 100 credits</button>
+
+  <p>Drake: <span id="price-drake">100</span> credits per share</p>
+  <button onclick="buyArtist('Drake', 100)">Buy 100 credits</button>
+  <button onclick="sellArtist('Drake', 100)">Sell 100 credits</button>
+
+  <!-- Display portfolio -->
+  <h2>Your Portfolio</h2>
+  <table id="portfolioTable">
+    <thead>
+      <tr>
+        <th>Artist</th>
+        <th>Invested</th>
+        <th>Current Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Rows inserted by JavaScript -->
+    </tbody>
+  </table>
+
+  <script>
+    // Starting credits
+    let credits = 1000;
+
+    // Portfolio: investments per artist
+    let portfolio = {
+      "Ariana Grande": 0,
+      "Drake": 0
+    };
+
+    // Stock prices (credits per share)
+    let prices = {
+      "Ariana Grande": 100,
+      "Drake": 100
+    };
+
+    // Buy function
+    function buyArtist(name, amount) {
+      if (credits >= amount) {
+        credits -= amount;
+        portfolio[name] += amount;
+        updateDisplay();
+      } else {
+        alert("Not enough credits!");
+      }
+    }
+
+    // Sell function
+    function sellArtist(name, amount) {
+      if (portfolio[name] >= amount) {
+        credits += amount;
+        portfolio[name] -= amount;
+        updateDisplay();
+      } else {
+        alert("You don't have that much invested!");
+      }
+    }
+
+    // Update displayed credits and portfolio table
+    function updateDisplay() {
+      document.getElementById('credits').innerText = credits;
+
+      let tbody = document.getElementById('portfolioTable').querySelector('tbody');
+      tbody.innerHTML = '';
+
+      for (let artist in portfolio) {
+        let invested = portfolio[artist];
+        let price = prices[artist];
+        let value = invested * price / 100;
+
+        let row = document.createElement('tr');
+
+        let cellArtist = document.createElement('td');
+        cellArtist.innerText = artist;
+        row.appendChild(cellArtist);
+
+        let cellInvested = document.createElement('td');
+        cellInvested.innerText = invested;
+        row.appendChild(cellInvested);
+
+        let cellValue = document.createElement('td');
+        cellValue.innerText = value.toFixed(2);
+
+        // Color code: green if value > invested, red if < invested
+        if (value > invested) {
+          cellValue.classList.add('up');
+        } else if (value < invested) {
+          cellValue.classList.add('down');
+        }
+
+        row.appendChild(cellValue);
+        tbody.appendChild(row);
+      }
+    }
+
+    // Initial display
+    updateDisplay();
+  </script>
+</body>
+</html>
+
+
 
 
