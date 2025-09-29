@@ -113,6 +113,25 @@
       border-radius: 15px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
+
+    #searchResults div {
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      background-color: #f1f8f1;
+      display: flex;
+      align-items: center;
+    }
+
+    #searchResults img {
+      border-radius: 50%;
+      margin-right: 1rem;
+    }
+
+    #artistSearch, #artistSearchButton {
+      margin-top: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -142,6 +161,11 @@
       </div>
     </div>
 
+    <h2>Search for an Artist</h2>
+    <input type="text" id="artistSearch" placeholder="Type artist name..." style="padding:0.5rem; border-radius:12px; border:1px solid #ccc;">
+    <button id="artistSearchButton" onclick="searchArtist()" style="padding:0.5rem 1rem; border-radius:12px; background-color:#81c784; color:white; border:none; cursor:pointer;">Search</button>
+    <div id="searchResults"></div>
+
     <h2>Your Portfolio</h2>
     <table id="portfolioTable">
       <thead>
@@ -152,7 +176,6 @@
         </tr>
       </thead>
       <tbody>
-        <!-- Portfolio rows inserted here -->
       </tbody>
     </table>
 
@@ -166,15 +189,43 @@
     let credits = 1000;
     let portfolio = { "Ariana Grande": 0, "Drake": 0 };
     let prices = { "Ariana Grande": 100, "Drake": 100 };
-    let portfolioHistory = []; // Store portfolio value over time
+    let portfolioHistory = [];
 
     // ----------- Spotify Setup -----------
-    const accessToken = "<PASTE_YOUR_SPOTIFY_TOKEN_HERE>";
+    const clientId = 'YOUR_CLIENT_ID';
+    const clientSecret = 'YOUR_CLIENT_SECRET';
+    let accessToken = '';
+
     const artists = {
       "Ariana Grande": "0C8ZW7JHO19nR1t6Y27Bhw",
       "Drake": "3TVXtAsR1Inumwj472S9r4"
     };
 
+    // ----------- Fetch Access Token -----------
+    async function getToken() {
+      const authString = btoa(`${clientId}:${clientSecret}`);
+      try {
+        const res = await fetch('https://accounts.spotify.com/api/token', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Basic ${authString}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: 'grant_type=client_credentials'
+        });
+        const data = await res.json();
+        accessToken = data.access_token;
+        console.log('Access token fetched:', accessToken);
+      } catch (err) {
+        console.error('Error fetching token:', err);
+      }
+    }
+
+    // Automatically fetch token on load and refresh every 55 mins
+    getToken();
+    setInterval(getToken, 55 * 60 * 1000);
+
+    // ----------- Fetch Artist Followers -----------
     async function fetchFollowers(artistId) {
       try {
         const res = await fetch(`https://api.spotify.com/v1/artists/${artistId}`, {
@@ -201,6 +252,7 @@
     function buyArtist(name, amount) {
       if (credits >= amount) {
         credits -= amount;
+        if (!portfolio[name]) portfolio[name] = 0;
         portfolio[name] += amount;
         updateDisplay();
         updatePortfolioHistory();
@@ -246,56 +298,4 @@
         tbody.appendChild(row);
 
         const priceSpan = document.getElementById(`price-${artist.toLowerCase().replace(/\s/g,'')}`);
-        if (priceSpan) priceSpan.innerText = prices[artist].toFixed(2);
-      }
-    }
-
-    // ----------- Portfolio Chart -----------
-    const ctx = document.getElementById('portfolioChart').getContext('2d');
-    const chartData = {
-      labels: [],
-      datasets: [{
-        label: 'Portfolio Value',
-        data: [],
-        borderColor: '#66bb6a',
-        backgroundColor: 'rgba(102, 187, 106, 0.2)',
-        fill: true,
-        tension: 0.3
-      }]
-    };
-
-    const portfolioChart = new Chart(ctx, {
-      type: 'line',
-      data: chartData,
-      options: {
-        responsive: true,
-        plugins: { legend: { display: true } },
-        scales: { y: { beginAtZero: true } }
-      }
-    });
-
-    function getPortfolioValue() {
-      let total = credits;
-      for (let artist in portfolio) {
-        total += portfolio[artist] * (prices[artist] / 100);
-      }
-      return total;
-    }
-
-    function updatePortfolioHistory() {
-      const now = new Date();
-      const timeLabel = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
-      const value = getPortfolioValue();
-
-      chartData.labels.push(timeLabel);
-      chartData.datasets[0].data.push(value);
-      portfolioChart.update();
-    }
-
-    // ----------- Initial Setup -----------
-    updateDisplay();
-    updateStockPrices();
-    setInterval(updateStockPrices, 60000); // refresh every minute
-  </script>
-</body>
-</html>
+        if (priceSpan) priceSpan
