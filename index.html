@@ -192,8 +192,8 @@
     let portfolioHistory = [];
 
     // ----------- Spotify Setup -----------
-    const clientId = b0450273fe7d41a08cc3ea93a2e733ae;
-    const clientSecret = 5b22a59a771b4f8885f887958bfddeb2;
+    const clientId = 'YOUR_CLIENT_ID';     // 🔑 replace with your real Client ID
+    const clientSecret = 'YOUR_CLIENT_SECRET'; // 🔑 replace with your real Client Secret
     let accessToken = '';
 
     const artists = {
@@ -221,7 +221,6 @@
       }
     }
 
-    // Automatically fetch token on load and refresh every 55 mins
     getToken();
     setInterval(getToken, 55 * 60 * 1000);
 
@@ -298,5 +297,80 @@
         tbody.appendChild(row);
 
         const priceSpan = document.getElementById(`price-${artist.toLowerCase().replace(/\s/g,'')}`);
-        if (priceSpan) priceSpan
+        if (priceSpan) priceSpan.innerText = prices[artist].toFixed(2);
+      }
+    }
 
+    // ----------- Portfolio Chart -----------
+    const ctx = document.getElementById('portfolioChart').getContext('2d');
+    const portfolioChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Portfolio Value',
+          data: [],
+          borderColor: '#66bb6a',
+          backgroundColor: 'rgba(129,199,132,0.2)',
+          tension: 0.2,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+
+    function updatePortfolioHistory() {
+      const totalValue = Object.keys(portfolio).reduce((acc, artist) => {
+        const invested = portfolio[artist];
+        const value = invested * (prices[artist] / 100);
+        return acc + value;
+      }, 0);
+
+      const now = new Date().toLocaleTimeString();
+      portfolioHistory.push({ time: now, value: totalValue });
+
+      portfolioChart.data.labels.push(now);
+      portfolioChart.data.datasets[0].data.push(totalValue);
+      portfolioChart.update();
+    }
+
+    // ----------- Artist Search -----------
+    async function searchArtist() {
+      const query = document.getElementById('artistSearch').value;
+      if (!query) return;
+
+      try {
+        const res = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=artist&limit=3`, {
+          headers: { 'Authorization': `Bearer ${accessToken}` }
+        });
+        const data = await res.json();
+
+        const resultsDiv = document.getElementById('searchResults');
+        resultsDiv.innerHTML = '';
+
+        data.artists.items.forEach(artist => {
+          const artistDiv = document.createElement('div');
+          const img = artist.images.length ? artist.images[0].url : '';
+          artistDiv.innerHTML = `
+            <img src="${img}" alt="${artist.name}" width="50" height="50">
+            <div>
+              <strong>${artist.name}</strong><br>
+              Followers: ${artist.followers.total.toLocaleString()}
+            </div>
+          `;
+          resultsDiv.appendChild(artistDiv);
+        });
+      } catch (err) {
+        console.error('Search error:', err);
+      }
+    }
+
+    // ----------- Run initial setup -----------
+    updateDisplay();
+    setInterval(updateStockPrices, 30 * 1000);
+  </script>
+</body>
+</html>
