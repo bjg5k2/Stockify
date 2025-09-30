@@ -1,60 +1,9 @@
-// ----- Firebase Setup -----
-const firebaseConfig = {
-  apiKey: "AIzaSyBF5gzPThKD1ga_zpvtdBpiQFsexbEpZyY", // <-- Replace with the API key from Firebase Console
-  authDomain: "stockify-75531.firebaseapp.com",
-  projectId: "stockify-75531",
-  storageBucket: "stockify-75531.firebasestorage.app",
-  messagingSenderId: "831334536771",
-  appId: "1:831334536771:web:b142abcead4df128c826f6"
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-
-// ----- Track Current User -----
-let currentUser = null;
-
-// ----- Login / Signup -----
-async function signUp() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  try {
-    await auth.createUserWithEmailAndPassword(email, password);
-    alert("Signed up!");
-  } catch (err) {
-    alert(err.message);
-  }
-}
-
-async function logIn() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  try {
-    await auth.signInWithEmailAndPassword(email, password);
-    alert("Logged in!");
-  } catch (err) {
-    alert(err.message);
-  }
-}
-
-// Update user state
-auth.onAuthStateChanged(user => {
-  currentUser = user;
-  if (user) {
-    console.log("Logged in as:", user.email);
-    document.getElementById("auth-section").style.display = "none";
-    initPortfolio();
-    showPage("home");
-  } else {
-    document.getElementById("auth-section").style.display = "block";
-  }
-});
+// ----- Track Portfolio -----
+let userPortfolio = {}; // key: artistId, value: {name, credits}
+let userCredits = 10000;
 
 // ----- Page Navigation -----
 function showPage(pageId) {
-  if (!currentUser) {
-    alert("Please log in to access this page.");
-    return;
-  }
   document.querySelectorAll(".page").forEach(p => p.style.display = "none");
   document.getElementById(`${pageId}-page`).style.display = "block";
 }
@@ -79,6 +28,7 @@ async function getToken() {
 // ----- Search Artists -----
 async function searchArtist() {
   const name = document.getElementById("search-input").value;
+  if (!name) return alert("Enter an artist name");
   const token = await getToken();
   const resp = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(name)}&type=artist&limit=10`, {
     headers: { "Authorization": "Bearer " + token }
@@ -100,23 +50,18 @@ async function searchArtist() {
       <img src="${artist.images[0]?.url || ''}" alt="${artist.name}">
       <p><strong>${artist.name}</strong></p>
       <p>Followers: ${artist.followers.total.toLocaleString()}</p>
-      <button onclick="invest('${artist.id}','${artist.name}')">Invest</button>
+      <button class="invest-btn" onclick="invest('${artist.id}','${artist.name}')">Invest</button>
     `;
     resultsDiv.appendChild(artistDiv);
   });
 }
 
-// ----- Portfolio & Investing -----
-let userPortfolio = {}; // key: artistId, value: {name, credits}
-let userCredits = 10000;
-
+// ----- Portfolio / Investing -----
 function initPortfolio() {
-  // Initialize portfolio in memory
   updatePortfolioUI();
 }
 
 function invest(artistId, artistName) {
-  if (!currentUser) return alert("Please log in to invest.");
   const amount = prompt(`You have ${userCredits} credits. Enter amount to invest in ${artistName}:`);
   const investAmount = parseInt(amount);
   if (isNaN(investAmount) || investAmount <= 0) return alert("Enter a valid number");
@@ -144,3 +89,7 @@ function updatePortfolioUI() {
     portfolioDiv.appendChild(div);
   }
 }
+
+// Initialize portfolio on load
+initPortfolio();
+showPage("home");
