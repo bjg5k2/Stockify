@@ -80,23 +80,29 @@ document.addEventListener('DOMContentLoaded', () => {
       const doc = await docRef.get();
 
       if (doc.exists) {
-        userData = doc.data();
-        // Ensure investments and credits exist
-        if (!userData.investments) userData.investments = {};
-        if (!userData.credits) userData.credits = 10000;
+        userData = doc.data() || { credits: 10000, investments: {} };
       } else {
         // first time user
         userData = { credits: 10000, investments: {} };
         await docRef.set(userData);
       }
 
-      displayPortfolio(); // only display AFTER data is loaded
+      // safe defaults
+      if (!userData.investments) userData.investments = {};
+      if (!userData.credits) userData.credits = 10000;
+
+      displayPortfolio();
     } catch (err) {
       console.error('Error loading portfolio:', err);
     }
   }
 
   function displayPortfolio() {
+    // safe defaults
+    if (!userData) userData = { credits: 10000, investments: {} };
+    if (!userData.investments) userData.investments = {};
+    if (!userData.credits) userData.credits = 10000;
+
     const summaryDiv = document.getElementById('portfolio-summary');
     summaryDiv.innerHTML = `<p>Credits: ${userData.credits.toFixed(2)}</p>`;
 
@@ -174,7 +180,6 @@ document.addEventListener('DOMContentLoaded', () => {
   window.invest = async function(artistName) {
     if (!currentUser) return alert('Please log in first');
 
-    // Ensure investments exists
     if (!userData.investments) userData.investments = {};
 
     const creditsToInvest = parseInt(prompt(`Enter credits to invest in ${artistName}:`));
@@ -188,10 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       await db.collection('users').doc(currentUser.uid).set(userData);
-
-      // Refresh portfolio immediately
       displayPortfolio();
-
       alert(`Invested ${creditsToInvest} credits in ${artistName} (Fee: ${fee.toFixed(2)})`);
     } catch (err) {
       console.error(err);
