@@ -1,5 +1,3 @@
-/* Stockify — green theme, pleasant UI + loading overlay */
-
 :root{
   --green-700: #0d6b2f;
   --green-500: #14a44d;
@@ -10,8 +8,6 @@
 }
 
 /* Loading overlay */
-body.loading * { visibility: hidden; }
-body.loading #loading-indicator { visibility: visible; }
 #loading-indicator {
   position: fixed;
   top:0; left:0;
@@ -22,6 +18,9 @@ body.loading #loading-indicator { visibility: visible; }
   background:white;
   font-size:20px;
   z-index:9999;
+}
+body.loaded #loading-indicator {
+  display: none;
 }
 
 * { box-sizing: border-box; }
