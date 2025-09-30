@@ -96,7 +96,27 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // -----------------------
-  // Artist Search (Free / mock)
+  // Spotify Client Credentials
+  // -----------------------
+  const SPOTIFY_CLIENT_ID = "b0450273fe7d41a08cc3ea93a2e733ae";
+  const SPOTIFY_CLIENT_SECRET = "5b22a59a771b4f8885f887958bfddeb2";
+  let spotifyToken = "";
+
+  async function getSpotifyToken() {
+    const res = await fetch('https://accounts.spotify.com/api/token', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Basic ' + btoa(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`),
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: 'grant_type=client_credentials'
+    });
+    const data = await res.json();
+    spotifyToken = data.access_token;
+  }
+
+  // -----------------------
+  // Live Spotify Artist Search
   // -----------------------
   window.searchArtist = async function() {
     const query = document.getElementById('search-input').value;
@@ -106,44 +126,29 @@ document.addEventListener('DOMContentLoaded', () => {
     resultsDiv.innerHTML = '<p>Loading...</p>';
 
     try {
-      // Mock result (replace with API if available)
-      const data = [
-        { id: '1', name: 'Mock Artist', followers: { total: 12345 }, images: [{ url: 'https://via.placeholder.com/150' }] }
-      ];
+      if (!spotifyToken) await getSpotifyToken();
+
+      const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=artist&limit=10`, {
+        headers: { 'Authorization': `Bearer ${spotifyToken}` }
+      });
+
+      const data = await response.json();
 
       resultsDiv.innerHTML = '';
-      data.forEach(artist => {
+      if (!data.artists || !data.artists.items.length) {
+        resultsDiv.innerHTML = '<p>No artists found.</p>';
+        return;
+      }
+
+      data.artists.items.forEach(artist => {
         const card = document.createElement('div');
         card.className = 'artist-card';
         card.innerHTML = `
           <img src="${artist.images[0]?.url || 'https://via.placeholder.com/150'}" alt="${artist.name}">
           <h3>${artist.name}</h3>
-          <p>Followers: ${artist.followers?.total || 'N/A'}</p>
+          <p>Followers: ${artist.followers?.total.toLocaleString() || 'N/A'}</p>
+          <p>Genres: ${artist.genres.join(', ') || 'N/A'}</p>
+          <p>Popularity: ${artist.popularity || 'N/A'}</p>
           <button class="invest-btn" onclick="invest('${artist.name}')">Invest</button>
         `;
-        resultsDiv.appendChild(card);
-      });
-    } catch (err) {
-      console.error(err);
-      resultsDiv.innerHTML = '<p>Error fetching artists.</p>';
-    }
-  };
-
-  // -----------------------
-  // Investment Logic
-  // -----------------------
-  window.invest = function(artistName) {
-    if (!currentUser) return alert('Please log in first');
-    const creditsToInvest = parseInt(prompt(`Enter credits to invest in ${artistName}:`));
-    if (isNaN(creditsToInvest) || creditsToInvest <= 0) return alert('Invalid number');
-    const fee = creditsToInvest * 0.02;
-    if (creditsToInvest + fee > userData.credits) return alert('Not enough credits');
-
-    userData.credits -= creditsToInvest + fee;
-    userData.investments[artistName] = (userData.investments[artistName] || 0) + creditsToInvest;
-
-    db.collection('users').doc(currentUser.uid).set(userData);
-    displayPortfolio();
-    alert(`Invested ${creditsToInvest} credits in ${artistName} (Fee: ${fee.toFixed(2)})`);
-  };
-});
+        resultsDiv
