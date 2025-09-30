@@ -59,6 +59,7 @@ async function searchArtist() {
 // ----- Portfolio / Investing -----
 function initPortfolio() {
   updatePortfolioUI();
+  updateTopPerformers();
 }
 
 function invest(artistId, artistName) {
@@ -77,6 +78,7 @@ function invest(artistId, artistName) {
   userPortfolio[artistId].credits += investAmount;
 
   updatePortfolioUI();
+  updateTopPerformers();
 }
 
 function updatePortfolioUI() {
@@ -85,11 +87,34 @@ function updatePortfolioUI() {
   for (const id in userPortfolio) {
     const artist = userPortfolio[id];
     const div = document.createElement("div");
+    div.className = "portfolio-card";
     div.textContent = `${artist.name}: ${artist.credits} credits invested`;
     portfolioDiv.appendChild(div);
   }
 }
 
-// Initialize portfolio on load
+// ----- Top Performers -----
+function updateTopPerformers() {
+  const topDiv = document.getElementById("top-list");
+  topDiv.innerHTML = "";
+
+  const sorted = Object.entries(userPortfolio)
+    .sort((a,b) => b[1].credits - a[1].credits)
+    .slice(0,5);
+
+  if (sorted.length === 0) {
+    topDiv.innerHTML = "<p>No investments yet.</p>";
+    return;
+  }
+
+  sorted.forEach(([id, artist]) => {
+    const div = document.createElement("div");
+    div.className = "top-card";
+    div.innerHTML = `<p><strong>${artist.name}</strong></p><p>Credits: ${artist.credits}</p>`;
+    topDiv.appendChild(div);
+  });
+}
+
+// Initialize
 initPortfolio();
 showPage("home");
