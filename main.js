@@ -1,51 +1,43 @@
 let auth, db, spotifyConfig;
-let _spotifyToken = null;
-let _spotifyExpiry = 0;
 
-document.addEventListener('DOMContentLoaded', async () => {
-  // Initialize Firebase
-  firebase.initializeApp(window.appConfig.firebase);
-  auth = firebase.auth();
-  db = firebase.firestore();
-  spotifyConfig = window.appConfig.spotify;
+document.addEventListener('DOMContentLoaded', () => {
+  // ---------- Firebase ----------
+  if (window.appConfig && window.appConfig.firebase) {
+    firebase.initializeApp(window.appConfig.firebase);
+    auth = firebase.auth();
+    db = firebase.firestore();
+    spotifyConfig = window.appConfig.spotify;
 
-  // Redirect to login if not signed in
-  auth.onAuthStateChanged(user => {
-    if (!user) window.location.href = 'login.html';
+    auth.onAuthStateChanged(user => {
+      if (!user) window.location.href = 'login.html';
+    });
+  }
+
+  // ---------- Page switching ----------
+  window.showPage = function(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const page = document.getElementById(pageId);
+    if (page) page.classList.add('active');
+    if (pageId === 'portfolio') loadPortfolio();
+  };
+
+  document.querySelectorAll('button[data-page]').forEach(btn => {
+    btn.addEventListener('click', () => showPage(btn.dataset.page));
   });
 
-  // ---------- Navbar buttons ----------
-  const navbarLeft = document.getElementById('navbar-left');
-  if (navbarLeft) {
-    navbarLeft.addEventListener('click', (e) => {
-      if (e.target.tagName === 'BUTTON' && e.target.dataset.page) {
-        showPage(e.target.dataset.page);
-      }
-    });
-  }
-
+  // ---------- Logout ----------
   const logoutBtn = document.getElementById('logout-btn');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', async () => {
+  if (logoutBtn) logoutBtn.addEventListener('click', async () => {
+    if (auth) {
       await auth.signOut();
       window.location.href = 'login.html';
-    });
-  }
+    }
+  });
 
+  // ---------- Search ----------
   const searchBtn = document.getElementById('search-btn');
-  if (searchBtn) {
-    searchBtn.addEventListener('click', searchArtist);
-  }
+  if (searchBtn) searchBtn.addEventListener('click', searchArtist);
 });
-
-// ---------- Page switching ----------
-function showPage(pageId) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  const page = document.getElementById(pageId);
-  if (page) page.classList.add('active');
-
-  if (pageId === 'portfolio') loadPortfolio();
-}
 
 // ---------- Portfolio ----------
 async function loadPortfolio() {
@@ -53,9 +45,11 @@ async function loadPortfolio() {
   if (!user) return;
   const ref = db.collection('users').doc(user.uid);
   const snap = await ref.get();
-  let data = snap.exists ? snap.data() : { balance: 10000, investments: {} };
+  const data = snap.exists ? snap.data() : { balance: 10000, investments: {} };
 
   if (!data.investments) data.investments = {};
+  if (typeof data.balance !== 'number') data.balance = Number(data.balance) || 10000;
+
   document.getElementById('balance').innerText = `Balance: ${data.balance} credits`;
   displayPortfolio(data.investments);
 }
@@ -77,6 +71,9 @@ function displayPortfolio(investments = {}) {
 }
 
 // ---------- Spotify ----------
+let _spotifyToken = null;
+let _spotifyExpiry = 0;
+
 async function getSpotifyToken() {
   const now = Date.now();
   if (_spotifyToken && now < _spotifyExpiry - 5000) return _spotifyToken;
@@ -95,7 +92,6 @@ async function getSpotifyToken() {
   return _spotifyToken;
 }
 
-// ---------- Search & invest ----------
 async function searchArtist() {
   const q = document.getElementById('search').value;
   if (!q) return;
@@ -109,6 +105,7 @@ async function searchArtist() {
     });
     const json = await resp.json();
     const items = json.artists?.items || [];
+
     if (!items.length) {
       results.innerHTML = '<div class="card">No artists found.</div>';
       return;
@@ -127,19 +124,19 @@ async function searchArtist() {
         <input type="number" id="amount-${idSafe}" placeholder="Credits to invest" min="1"/>
         <button data-id="${idSafe}" data-name="${artist.name}">Invest</button>
       `;
-      const btn = card.querySelector('button');
-      btn.addEventListener('click', () => {
+      card.querySelector('button').addEventListener('click', () => {
         const amt = parseInt(document.getElementById(`amount-${idSafe}`).value, 10);
         invest(artist.name, amt);
       });
       results.appendChild(card);
     });
   } catch(err) {
-    console.error('Spotify search error', err);
+    console.error(err);
     results.innerHTML = '<div class="card">Error fetching results. Check console.</div>';
   }
 }
 
+// ---------- Invest ----------
 async function invest(artistName, amount) {
   const user = auth.currentUser;
   if (!user) return alert('Please log in first');
@@ -148,11 +145,12 @@ async function invest(artistName, amount) {
   const ref = db.collection('users').doc(user.uid);
   const snap = await ref.get();
   let data = snap.exists ? snap.data() : { balance: 10000, investments: {} };
+
   const balance = Number(data.balance || 0);
   const investments = data.investments || {};
-
   const fee = Math.ceil(amount * 0.02);
   const totalCost = amount + fee;
+
   if (balance < totalCost) return alert('Not enough balance');
 
   investments[artistName] = (investments[artistName] || 0) + amount;
