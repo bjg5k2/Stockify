@@ -1,72 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stockify</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stockify</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Auth Section (always visible initially) -->
-  <div id="auth-section" class="page active">
-    <div class="auth-card">
+<!-- Login Page -->
+<div id="auth-section" class="page active">
+  <div class="auth-card">
+    <h2>Welcome to Stockify</h2>
+    <p>Sign up or log in to manage your music investments</p>
+    <input type="email" placeholder="Email" required>
+    <input type="password" placeholder="Password" required>
+    <div class="auth-actions">
+      <button onclick="signUp()">Sign Up</button>
+      <button class="secondary" onclick="logIn()">Log In</button>
+    </div>
+  </div>
+</div>
+
+<!-- Navbar (hidden initially) -->
+<header>
+  <h1>Stockify</h1>
+  <nav id="navbar" class="hidden">
+    <button onclick="showPage('home')">Home</button>
+    <button onclick="showPage('portfolio')">Portfolio</button>
+    <button onclick="showPage('trade')">Trade</button>
+    <button onclick="logOut()">Log Out</button>
+  </nav>
+</header>
+
+<div class="container">
+  <div id="home" class="page hidden section">
+    <div class="card">
       <h2>Welcome to Stockify</h2>
-      <p>Sign up or log in to manage your music investments</p>
-      <input type="email" placeholder="Email" required />
-      <input type="password" placeholder="Password" required />
-      <div class="auth-actions">
-        <button onclick="signUp()">Sign Up</button>
-        <button class="secondary" onclick="logIn()">Log In</button>
-      </div>
+      <p>Invest your credits in your favorite artists and build your portfolio!</p>
     </div>
   </div>
 
-  <!-- Navbar -->
-  <header>
-    <h1>Stockify</h1>
-    <nav id="navbar" class="hidden">
-      <button onclick="showPage('home')">Home</button>
-      <button onclick="showPage('portfolio')">Portfolio</button>
-      <button onclick="showPage('trade')">Trade</button>
-      <button onclick="logOut()">Log Out</button>
-    </nav>
-  </header>
-
-  <!-- Main Content -->
-  <div class="container">
-
-    <!-- Home -->
-    <div id="home" class="page hidden section">
-      <div class="card">
-        <h2>Welcome to Stockify</h2>
-        <p>Invest your credits in your favorite artists and build your portfolio!</p>
-      </div>
-    </div>
-
-    <!-- Portfolio -->
-    <div id="portfolio" class="page hidden section">
-      <h2>Your Portfolio</h2>
-      <div id="balance">Balance: 0 credits</div>
-      <div id="investments"></div>
-    </div>
-
-    <!-- Trade -->
-    <div id="trade" class="page hidden section">
-      <h2>Trade Artists</h2>
-      <input type="text" id="search" placeholder="Search for an artist" />
-      <button onclick="searchArtist()">Search</button>
-      <div id="results" class="grid"></div>
-    </div>
-
+  <div id="portfolio" class="page hidden section">
+    <h2>Your Portfolio</h2>
+    <div id="balance">Balance: 0 credits</div>
+    <div id="investments"></div>
   </div>
 
-  <!-- Firebase Compat Scripts -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <div id="trade" class="page hidden section">
+    <h2>Trade Artists</h2>
+    <input type="text" id="search" placeholder="Search for an artist">
+    <button onclick="searchArtist()">Search</button>
+    <div id="results" class="grid"></div>
+  </div>
+</div>
 
-  <!-- Main JS -->
-  <script src="main.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="main.js"></script>
 </body>
 </html>
