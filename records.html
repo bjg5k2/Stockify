@@ -2,33 +2,35 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Music Stocks - Records</title>
+  <title>Records</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBF5gzPThKD1ga_zpvtdBpiQFsexbEpZyY",
+      authDomain: "stockify-75531.firebaseapp.com",
+      projectId: "stockify-75531",
+      storageBucket: "stockify-75531.firebasestorage.app",
+      messagingSenderId: "831334536771",
+      appId: "1:831334536771:web:b142abcead4df128c826f6"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+  </script>
 </head>
 <body>
-  <header>
-    <h1>🎵 Records</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="portfolio.html">Portfolio</a>
-      <a href="records.html">Records</a>
-    </nav>
-  </header>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="portfolio.html">My Portfolio</a>
+    <a href="records.html">Records</a>
+  </nav>
 
-  <main>
-    <section>
-      <h2>🏆 Top Artists by Total Credits</h2>
-      <canvas id="topCreditsChart"></canvas>
-    </section>
+  <h1>Top Artists</h1>
+  <ul id="recordsList"></ul>
 
-    <section>
-      <h2>📈 Recent Investments</h2>
-      <canvas id="recentInvestmentsChart"></canvas>
-    </section>
-  </main>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
