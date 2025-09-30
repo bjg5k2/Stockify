@@ -1,24 +1,26 @@
+// main.js
 let auth, db, spotifyConfig;
 
-try {
-  const config = window.appConfig;
-  firebase.initializeApp(config.firebase);
-  auth = firebase.auth();
-  db = firebase.firestore();
-  spotifyConfig = config.spotify;
+document.addEventListener('DOMContentLoaded', () => {
+  if (!window.appConfig) return alert('App config missing!');
+  try {
+    firebase.initializeApp(window.appConfig.firebase);
+    auth = firebase.auth();
+    db = firebase.firestore();
+    spotifyConfig = window.appConfig.spotify;
 
-  auth.onAuthStateChanged(user => {
-    if (!user) window.location.href = 'login.html';
-  });
+    auth.onAuthStateChanged(user => {
+      if (!user) window.location.href = 'login.html';
+    });
 
-  initializeApp();
-} catch(err) {
-  console.error('Failed to initialize app:', err);
-  alert('Failed to initialize app. Please refresh the page.');
-}
+    initializeApp();
+  } catch(err) {
+    console.error('Failed to init app', err);
+    alert('Failed to initialize app. Check console.');
+  }
+});
 
 function initializeApp() {
-  // Page switching
   window.showPage = function(pageId) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const page = document.getElementById(pageId);
@@ -70,7 +72,7 @@ function displayPortfolio(investments = {}) {
   });
 }
 
-// Spotify search
+// Spotify
 let _spotifyToken = null, _spotifyExpiry = 0;
 
 async function getSpotifyToken() {
