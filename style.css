@@ -1,60 +1,105 @@
+/* Fonts & Reset */
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Poppins', sans-serif;
   background: #f0fff4;
   margin: 0;
   padding: 0;
+  color: #333;
 }
 
 nav {
   background: #a3e4d7;
   display: flex;
-  justify-content: center;
-  padding: 1rem;
-  gap: 1rem;
-  border-bottom: 2px solid #76c7b7;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
 }
 
-nav button {
+.nav-brand {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.nav-buttons button {
   padding: 0.5rem 1rem;
+  margin-left: 0.5rem;
   border-radius: 12px;
   border: none;
-  background: #76c7b7;
+  background: #52a78f;
   color: white;
   cursor: pointer;
-  font-weight: bold;
+  font-weight: 600;
   transition: background 0.3s;
 }
 
-nav button:hover {
-  background: #52a78f;
+.nav-buttons button:hover {
+  background: #3d826b;
 }
 
 main {
   padding: 2rem;
-}
-
-.page {
-  max-width: 900px;
+  max-width: 1000px;
   margin: auto;
 }
 
-#artist-results {
+.page {
+  margin-bottom: 3rem;
+}
+
+h1, h2 {
+  color: #2f6b5b;
+}
+
+.search-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+}
+
+.search-bar button {
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  border: none;
+  background: #52a78f;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.search-bar button:hover {
+  background: #3d826b;
+}
+
+#artist-results, #top-list {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  margin-top: 1rem;
 }
 
-.artist-card {
+.artist-card, .portfolio-card, .top-card {
   background: #e0f7eb;
   border-radius: 16px;
   padding: 1rem;
   width: 200px;
   box-shadow: 0 3px 6px rgba(0,0,0,0.1);
   text-align: center;
+  transition: transform 0.2s;
 }
 
-.artist-card img {
+.artist-card:hover, .portfolio-card:hover, .top-card:hover {
+  transform: translateY(-5px);
+}
+
+.artist-card img, .top-card img {
   width: 100%;
   border-radius: 12px;
   margin-bottom: 0.5rem;
@@ -72,4 +117,14 @@ button.invest-btn {
 
 button.invest-btn:hover {
   background: #3d826b;
+}
+
+@media (max-width: 600px) {
+  .artist-card, .portfolio-card, .top-card {
+    width: 100%;
+  }
+  .nav-buttons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 }
