@@ -1,41 +1,42 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #e8f5e9;
-  color: #2e7d32;
+  background: #f0fff0;
+  color: #333;
   margin: 0;
   padding: 0;
 }
 
-nav {
-  background-color: #a5d6a7;
-  padding: 10px;
+header {
+  background: #b0e0a0;
+  padding: 1em;
   display: flex;
-  gap: 15px;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
 }
 
-nav a {
-  text-decoration: none;
-  color: #1b5e20;
-  font-weight: bold;
-}
-
-h1, h2, h3 {
-  text-align: center;
-}
-
-input, button {
-  padding: 8px;
-  margin: 5px;
-  border-radius: 5px;
-  border: 1px solid #2e7d32;
-}
-
-button {
-  background-color: #66bb6a;
-  color: white;
+nav button {
+  margin-left: 10px;
+  padding: 0.5em 1em;
+  border-radius: 10px;
+  border: none;
+  background: #90d080;
   cursor: pointer;
+  color: #fff;
 }
 
-button:hover {
-  background-color: #43a047;
+nav button:hover {
+  background: #70b060;
+}
+
+.page {
+  padding: 1em;
+}
+
+#artist-results img {
+  width: 100px;
+  height: 100px;
+  border-radius: 15px;
+  margin-right: 10px;
 }
