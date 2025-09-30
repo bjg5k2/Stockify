@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const userCredential = await auth.createUserWithEmailAndPassword(email, password);
       currentUser = userCredential.user;
+      userData = { credits: 10000, investments: {} };
       await db.collection('users').doc(currentUser.uid).set(userData);
       alert('Sign up successful!');
       showPage('home');
@@ -54,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const userCredential = await auth.signInWithEmailAndPassword(email, password);
       currentUser = userCredential.user;
-      loadPortfolio();
+      await loadPortfolio();
       showPage('home');
     } catch (err) {
       alert(err.message);
@@ -79,8 +80,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const doc = await docRef.get();
 
       if (doc.exists) {
-        userData = doc.data();  // load actual data from Firebase
+        userData = doc.data();
+        // Ensure investments and credits exist
+        if (!userData.investments) userData.investments = {};
+        if (!userData.credits) userData.credits = 10000;
       } else {
+        // first time user
         userData = { credits: 10000, investments: {} };
         await docRef.set(userData);
       }
@@ -168,6 +173,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // -----------------------
   window.invest = async function(artistName) {
     if (!currentUser) return alert('Please log in first');
+
+    // Ensure investments exists
+    if (!userData.investments) userData.investments = {};
 
     const creditsToInvest = parseInt(prompt(`Enter credits to invest in ${artistName}:`));
     if (isNaN(creditsToInvest) || creditsToInvest <= 0) return alert('Invalid number');
