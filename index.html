@@ -1,52 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stockify - Home</title>
-<link rel="stylesheet" href="style.css">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <meta charset="UTF-8">
+  <title>Stockify</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <nav>
-    <div class="nav-brand">Stockify</div>
-    <div class="nav-buttons center">
-      <button disabled>Home</button>
-      <a href="portfolio.html"><button>My Portfolio</button></a>
-      <a href="trade.html"><button>Trade</button></a>
-      <button id="logout-btn" onclick="logOut()" style="display:none;">Logout</button>
-    </div>
-  </nav>
+  <header>
+    <h1>Stockify</h1>
+    <nav>
+      <button onclick="showPage('home')">Home</button>
+      <button onclick="showPage('portfolio')">My Portfolio</button>
+      <button onclick="showPage('trade')">Trade</button>
+    </nav>
+  </header>
 
   <main>
-    <section id="auth-section">
-      <h2>Sign Up / Log In</h2>
-      <div>
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="password" placeholder="Password">
-        <button onclick="signUp()">Sign Up</button>
-        <button onclick="logIn()">Log In</button>
-      </div>
-      <p id="auth-msg"></p>
+    <!-- Home Page -->
+    <section id="home" class="page">
+      <h2>Welcome to Stockify!</h2>
+      <p>Trade "stock" in your favorite artists based on Spotify metrics.</p>
     </section>
 
-    <section id="welcome-section" style="display:none;">
-      <h1>Welcome to Stockify!</h1>
-      <p>Invest in your favorite artists and track their listener growth. See who’s trending and make your moves!</p>
+    <!-- Portfolio Page -->
+    <section id="portfolio" class="page" style="display:none;">
+      <h2>My Portfolio</h2>
+      <div id="portfolio-summary"></div>
+      <div id="portfolio-list"></div>
+    </section>
 
-      <div id="top-performers">
-        <h2>Top Performers</h2>
-        <div id="top-list">
-          <p>No investments yet.</p>
-        </div>
-      </div>
+    <!-- Trade Page -->
+    <section id="trade" class="page" style="display:none;">
+      <h2>Trade Artists</h2>
+      <input type="text" id="search-input" placeholder="Search for an artist">
+      <button onclick="searchArtist()">Search</button>
+      <div id="artist-results"></div>
     </section>
   </main>
 
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
   <script src="main.js"></script>
 </body>
 </html>
