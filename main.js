@@ -27,17 +27,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function showAppUI() {
     document.getElementById('auth-section').classList.remove('active');
-    document.getElementById('navbar')?.classList.remove('hidden');
+    document.getElementById('navbar').classList.remove('hidden');
     showPage('home');
   }
 
   function showAuthUI() {
     document.getElementById('auth-section').classList.add('active');
-    document.getElementById('navbar')?.classList.add('hidden');
+    document.getElementById('navbar').classList.add('hidden');
     hideAllPages();
   }
 
-  // Auth
+  // ----------- Auth functions -----------
   window.signUp = async function() {
     const email = document.querySelector('#auth-section input[type="email"]').value;
     const password = document.querySelector('#auth-section input[type="password"]').value;
@@ -67,10 +67,11 @@ document.addEventListener('DOMContentLoaded', () => {
     showAuthUI();
   };
 
+  // ----------- Firebase state listener -----------
   auth.onAuthStateChanged(user => {
     currentUser = user;
     if(user) showAppUI();
-    else showAuthUI();
+    else showAuthUI(); // never hide login immediately
   });
 
   async function loadPortfolio() {
@@ -79,8 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const snap = await ref.get();
     const data = snap.exists ? snap.data() || {} : { balance:10000, investments:{} };
     if(!data.investments) data.investments={};
-    if(typeof data.balance!=='number') data.balance = Number(data.balance)||10000;
-    document.getElementById('balance').innerText = `Balance: ${data.balance} credits`;
+    if(typeof data.balance!=='number') data.balance=Number(data.balance)||10000;
+    document.getElementById('balance').innerText=`Balance: ${data.balance} credits`;
     displayPortfolio(data.investments);
   }
 
@@ -97,8 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Spotify API, search, invest code (same as previous)
-  // ... you can copy the full Spotify/search/invest code from prior main.js ...
-  
-  function escapeHtml(str){ if(typeof str!=='string') return str; return str.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  function escapeHtml(str){ return (typeof str==='string')?str.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])):str; }
+
 });
