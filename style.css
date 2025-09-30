@@ -9,7 +9,7 @@
   --muted: #667070;
 }
 
-/* ---------- Loading overlay ---------- */
+/* Loading overlay */
 body.loading * { visibility: hidden; }
 body.loading #loading-indicator { visibility: visible; }
 #loading-indicator {
