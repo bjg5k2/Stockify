@@ -123,45 +123,38 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!query) return;
 
     const resultsDiv = document.getElementById('artist-results');
-    resultsDiv.innerHTML = '<p>Loading...</p>';
+    resultsDiv.innerHTML = 'Searching...';
 
-    try {
-      if (!spotifyToken) await getSpotifyToken();
+    if (!spotifyToken) await getSpotifyToken();
 
-      const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=artist&limit=10`, {
-        headers: { 'Authorization': `Bearer ${spotifyToken}` }
-      });
+    const res = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=artist&limit=10`, {
+      headers: { 'Authorization': `Bearer ${spotifyToken}` }
+    });
+    const data = await res.json();
+    resultsDiv.innerHTML = '';
 
-      const data = await response.json();
-
-      resultsDiv.innerHTML = '';
-      if (!data.artists || !data.artists.items.length) {
-        resultsDiv.innerHTML = '<p>No artists found.</p>';
-        return;
-      }
-
-      data.artists.items.forEach(artist => {
-        const card = document.createElement('div');
-        card.className = 'artist-card';
-        card.innerHTML = `
-          <img src="${artist.images[0]?.url || 'https://via.placeholder.com/150'}" alt="${artist.name}">
-          <h3>${artist.name}</h3>
-          <p>Followers: ${artist.followers?.total.toLocaleString() || 'N/A'}</p>
-          <p>Genres: ${artist.genres.join(', ') || 'N/A'}</p>
-          <p>Popularity: ${artist.popularity || 'N/A'}</p>
-          <button class="invest-btn" onclick="invest('${artist.name}')">Invest</button>
-        `;
-        resultsDiv.appendChild(card);
-      });
-
-    } catch (err) {
-      console.error(err);
-      resultsDiv.innerHTML = '<p>Error fetching artists. Check console.</p>';
+    if (!data.artists.items.length) {
+      resultsDiv.textContent = 'No artists found.';
+      return;
     }
+
+    data.artists.items.forEach(artist => {
+      const card = document.createElement('div');
+      card.className = 'artist-card';
+      card.innerHTML = `
+        <img src="${artist.images[0]?.url || ''}" alt="${artist.name}">
+        <h4>${artist.name}</h4>
+        <p>Followers: ${artist.followers.total.toLocaleString()}</p>
+        <p>Genres: ${artist.genres.join(', ')}</p>
+        <p>Popularity: ${artist.popularity}</p>
+        <button class="invest-btn" onclick="invest('${artist.name}')">Invest</button>
+      `;
+      resultsDiv.appendChild(card);
+    });
   };
 
   // -----------------------
-  // Investment Function
+  // Investing Function
   // -----------------------
   window.invest = async function(artistName) {
     if (!currentUser) return alert('Please log in first');
@@ -177,11 +170,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       await db.collection('users').doc(currentUser.uid).set(userData);
-      displayPortfolio();
+
+      // Refresh portfolio if visible
+      if (document.getElementById('portfolio').style.display !== 'none') displayPortfolio();
+
       alert(`Invested ${creditsToInvest} credits in ${artistName} (Fee: ${fee.toFixed(2)})`);
     } catch (err) {
       console.error(err);
-      alert('Error saving investment. Check console.');
+      alert('Error saving investment.');
+      // Revert local changes if error
       userData.credits += creditsToInvest + fee;
       userData.investments[artistName] -= creditsToInvest;
     }
