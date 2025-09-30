@@ -1,6 +1,5 @@
-/* main.js — Stockify (ROI update, artist ID tracking) */
-
 document.addEventListener('DOMContentLoaded', () => {
+  // ---------- Firebase (compat) ----------
   const firebaseConfig = {
     apiKey: "AIzaSyBF5gzPThKD1ga_zpvtdBpiQFsexbEpZyY",
     authDomain: "stockify-75531.firebaseapp.com",
@@ -14,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const auth = firebase.auth();
   const db = firebase.firestore();
 
+  // ---------- UI helpers ----------
   function hideAllPages() {
     document.querySelectorAll('.page').forEach(el => {
       el.classList.add('hidden');
@@ -41,15 +41,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function showAuthUI() {
     const authSection = document.getElementById('auth-section');
-    if (authSection) {
-      authSection.classList.remove('hidden');
-      authSection.classList.add('active');
-    }
+    if (authSection) authSection.classList.remove('hidden');
     const navbar = document.getElementById('navbar');
     if (navbar) navbar.classList.add('hidden');
     hideAllPages();
   }
 
+  // ---------- Globals ----------
   let currentUser = null;
 
   // ---------- Auth ----------
@@ -65,9 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       showAppUI();
       loadPortfolio();
-    } catch (err) {
-      alert(err.message || 'Sign up error');
-    }
+    } catch (err) { alert(err.message || 'Sign up error'); }
   };
 
   window.logIn = async function() {
@@ -78,9 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
       currentUser = uc.user;
       showAppUI();
       loadPortfolio();
-    } catch (err) {
-      alert(err.message || 'Login error');
-    }
+    } catch (err) { alert(err.message || 'Login error'); }
   };
 
   window.logOut = async function() {
@@ -89,6 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
     showAuthUI();
   };
 
+  // ---------- FIX: prevent flash ----------
   auth.onAuthStateChanged(user => {
     currentUser = user;
     if (user) {
@@ -110,41 +105,31 @@ document.addEventListener('DOMContentLoaded', () => {
       if (typeof data.balance !== 'number') data.balance = Number(data.balance) || 10000;
 
       document.getElementById('balance').innerText = `Balance: ${data.balance} credits`;
-      await displayPortfolio(data.investments);
-    } catch (err) {
-      console.error('loadPortfolio error', err);
-    }
+      displayPortfolio(data.investments);
+    } catch (err) { console.error('loadPortfolio error', err); }
   }
 
-  async function displayPortfolio(investments = {}) {
+  function displayPortfolio(investments = {}) {
     const container = document.getElementById('investments');
     if (!container) return;
     container.innerHTML = '';
-
     const entries = Object.entries(investments);
-    if (!entries.length) {
+    if (entries.length === 0) {
       container.innerHTML = `<div class="card">No investments yet.</div>`;
       return;
     }
-
-    for (const [artistId, inv] of entries) {
-      const currentFollowers = await getArtistFollowers(artistId);
-      const followersAtPurchase = inv.followersAtPurchase || 1;
-      const roi = ((currentFollowers - followersAtPurchase) / followersAtPurchase) * inv.amount;
-
-      const card = document.createElement('div');
-      card.className = 'investment-item card';
-      card.innerHTML = `
+    entries.forEach(([artistId, inv]) => {
+      const d = document.createElement('div');
+      d.className = 'investment-item card';
+      const roi = inv.followersAtPurchase ? ((inv.currentFollowers || inv.followersAtPurchase)/inv.followersAtPurchase).toFixed(2) : 1;
+      d.innerHTML = `
         <div>${escapeHtml(inv.artistName)}</div>
         <div>
-          <strong>${Number(inv.amount).toLocaleString()} credits</strong>
-          <span style="color:${roi>=0?'green':'red'}; margin-left:8px;">
-            (${roi>=0?'+':''}${roi.toFixed(0)} ROI)
-          </span>
-        </div>
-      `;
-      container.appendChild(card);
-    }
+          <strong>${Number(inv.amount).toLocaleString()} credits</strong> 
+          (ROI: ${roi}x)
+        </div>`;
+      container.appendChild(d);
+    });
   }
 
   // ---------- Spotify ----------
@@ -156,23 +141,18 @@ document.addEventListener('DOMContentLoaded', () => {
   async function getSpotifyToken() {
     const now = Date.now();
     if (_spotifyToken && now < _spotifyTokenExpiry - 5000) return _spotifyToken;
-    try {
-      const res = await fetch('https://accounts.spotify.com/api/token', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Basic ' + btoa(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`),
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: 'grant_type=client_credentials'
-      });
-      const j = await res.json();
-      _spotifyToken = j.access_token;
-      _spotifyTokenExpiry = now + (j.expires_in || 3600) * 1000;
-      return _spotifyToken;
-    } catch (err) {
-      console.error('Spotify token error', err);
-      throw err;
-    }
+    const res = await fetch('https://accounts.spotify.com/api/token', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Basic ' + btoa(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`),
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: 'grant_type=client_credentials'
+    });
+    const j = await res.json();
+    _spotifyToken = j.access_token;
+    _spotifyTokenExpiry = now + (j.expires_in || 3600)*1000;
+    return _spotifyToken;
   }
 
   async function getArtistFollowers(artistId) {
@@ -183,19 +163,14 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       const json = await res.json();
       return json.followers?.total || 0;
-    } catch (err) {
-      console.error('getArtistFollowers error', err);
-      return 0;
-    }
+    } catch (err) { console.error('getArtistFollowers error', err); return 0; }
   }
 
   window.searchArtist = async function() {
-    const q = (document.getElementById('search') || {}).value;
+    const q = document.getElementById('search')?.value;
     if (!q) return;
-
     const results = document.getElementById('results');
     results.innerHTML = `<div class="card">Searching...</div>`;
-
     try {
       const token = await getSpotifyToken();
       const resp = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=artist&limit=8`, {
@@ -203,16 +178,11 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       const json = await resp.json();
       const items = json.artists?.items || [];
-
-      if (!items.length) {
-        results.innerHTML = `<div class="card">No artists found.</div>`;
-        return;
-      }
+      if (!items.length) return results.innerHTML = `<div class="card">No artists found.</div>`;
 
       results.innerHTML = '';
       items.forEach(artist => {
-        const img = artist.images && artist.images[0] ? artist.images[0].url : '';
-        const idSafe = artist.id;
+        const img = artist.images?.[0]?.url || '';
         const card = document.createElement('div');
         card.className = 'artist-card';
         card.innerHTML = `
@@ -220,22 +190,19 @@ document.addEventListener('DOMContentLoaded', () => {
           <h3>${escapeHtml(artist.name)}</h3>
           <p>Followers: ${Number(artist.followers?.total || 0).toLocaleString()}</p>
           <p class="muted">Genres: ${(artist.genres || []).slice(0,3).join(', ') || 'N/A'}</p>
-          <input type="number" id="amount-${idSafe}" placeholder="Credits to invest" min="1"/>
-          <button data-id="${idSafe}" data-name="${escapeAttr(artist.name)}">Invest</button>
+          <input type="number" id="amount-${artist.id}" placeholder="Credits to invest" min="1"/>
+          <button data-id="${artist.id}" data-name="${escapeAttr(artist.name)}">Invest</button>
         `;
-        const btn = card.querySelector('button');
-        btn.addEventListener('click', () => {
-          const amt = parseInt(document.getElementById(`amount-${idSafe}`).value, 10);
-          window.invest(artist.id, artist.name, amt);
+        card.querySelector('button').addEventListener('click', async () => {
+          const amt = document.getElementById(`amount-${artist.id}`).value;
+          await window.invest(artist.id, artist.name, parseInt(amt, 10));
         });
         results.appendChild(card);
       });
-    } catch (err) {
-      console.error('searchArtist error', err);
-      results.innerHTML = `<div class="card">Error fetching results. Check console.</div>`;
-    }
+    } catch (err) { console.error('searchArtist error', err); results.innerHTML = `<div class="card">Error fetching results.</div>`; }
   };
 
+  // ---------- Invest ----------
   window.invest = async function(artistId, artistName, amount) {
     if (!currentUser) return alert('Please log in first');
     if (!amount || amount <= 0) return alert('Enter a valid amount');
@@ -243,8 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const ref = db.collection('users').doc(currentUser.uid);
       const snap = await ref.get();
-      const data = snap.exists ? (snap.data() || {}) : { balance: 10000, investments: {} };
-
+      let data = snap.exists ? (snap.data() || {}) : { balance: 10000, investments: {} };
       let balance = Number(data.balance || 0);
       let investments = data.investments || {};
 
@@ -253,9 +219,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (balance < totalCost) return alert('Not enough balance');
 
       balance -= totalCost;
-
       if (!investments[artistId]) {
-        investments[artistId] = { artistName, amount, followersAtPurchase: 0 };
+        investments[artistId] = { artistName, amount, followersAtPurchase: 0, currentFollowers: 0 };
       } else {
         investments[artistId].amount += amount;
       }
@@ -264,25 +229,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const followers = await getArtistFollowers(artistId);
       investments[artistId].followersAtPurchase = followers;
+      investments[artistId].currentFollowers = followers;
       await ref.update({ investments });
 
       loadPortfolio();
       showPage('portfolio');
       alert(`Invested ${amount} credits in ${artistName} (fee ${fee})`);
-    } catch (err) {
-      console.error('invest error', err);
-      alert('Error performing investment. Check console.');
-    }
+    } catch (err) { console.error('invest error', err); alert('Error performing investment.'); }
   };
 
+  // ---------- Utilities ----------
   function escapeHtml(str) {
     if (typeof str !== 'string') return str;
     return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   }
-  function escapeAttr(str) {
-    return escapeHtml(str).replace(/"/g, '&quot;');
-  }
+  function escapeAttr(str) { return escapeHtml(str).replace(/"/g, '&quot;'); }
 
+  // Ensure navbar exists
   if (!document.getElementById('navbar')) {
     const nav = document.createElement('nav');
     nav.id = 'navbar';
@@ -296,5 +259,4 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.insertBefore(nav, document.querySelector('.container') || document.body.firstChild);
   }
 
-  if (!auth.currentUser) showAuthUI();
 });
