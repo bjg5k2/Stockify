@@ -2,40 +2,50 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Music Stock Game</title>
+  <title>Stockify</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <!-- Authentication Page -->
-  <div id="auth" class="page">
-    <h1>Welcome to Music Stock Game</h1>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="signUp()">Sign Up</button>
-    <button onclick="logIn()">Log In</button>
+  <div id="auth" class="page auth-page">
+    <div class="auth-card">
+      <h1>Welcome to <span class="brand">Stockify</span></h1>
+      <p class="tagline">Invest in the music you love</p>
+      <input type="email" id="email" placeholder="Email">
+      <input type="password" id="password" placeholder="Password">
+      <div class="auth-buttons">
+        <button onclick="signUp()">Sign Up</button>
+        <button onclick="logIn()">Log In</button>
+      </div>
+    </div>
   </div>
 
   <!-- Home Page -->
   <div id="home" class="page" style="display:none;">
-    <h1>Music Stock Game</h1>
-    <button onclick="logOut()">Log Out</button>
+    <header>
+      <h1 class="brand">Stockify</h1>
+      <button class="logout" onclick="logOut()">Log Out</button>
+    </header>
 
     <!-- Portfolio Section -->
-    <section>
+    <section class="portfolio-section">
       <h2>Your Portfolio</h2>
-      <div id="portfolio-summary"></div>
-      <div id="portfolio-list"></div>
+      <div id="portfolio-summary" class="card"></div>
+      <div id="portfolio-list" class="grid"></div>
     </section>
 
     <!-- Search Section -->
-    <section>
+    <section class="search-section">
       <h2>Search Artists</h2>
-      <input type="text" id="search-input" placeholder="Search for an artist">
-      <button onclick="searchArtist()">Search</button>
-      <div id="artist-results"></div>
+      <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Search for an artist">
+        <button onclick="searchArtist()">Search</button>
+      </div>
+      <div id="artist-results" class="grid"></div>
     </section>
   </div>
 
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
