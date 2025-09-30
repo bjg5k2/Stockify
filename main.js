@@ -1,205 +1,147 @@
-document.addEventListener('DOMContentLoaded', () => {
-  // -----------------------
-  // Firebase Setup
-  // -----------------------
-  const firebaseConfig = {
-    apiKey: "AIzaSyBF5gzPThKD1ga_zpvtdBpiQFsexbEpZyY",
-    authDomain: "stockify-75531.firebaseapp.com",
-    projectId: "stockify-75531",
-    storageBucket: "stockify-75531.firebasestorage.app",
-    messagingSenderId: "831334536771",
-    appId: "1:831334536771:web:b142abcead4df128c826f6"
-  };
+// Firebase config (yours already provided earlier)
+const firebaseConfig = {
+  apiKey: "AIzaSyBF5gzPThKD1ga_zpvtdBpiQFsexbEpZyY",
+  authDomain: "stockify-75531.firebaseapp.com",
+  projectId: "stockify-75531",
+  storageBucket: "stockify-75531.firebasestorage.app",
+  messagingSenderId: "831334536771",
+  appId: "1:831334536771:web:b142abcead4df128c826f6"
+};
 
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+// Init Firebase
+const app = firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-  // -----------------------
-  // Page Navigation
-  // -----------------------
-  window.showPage = function(pageId) {
-    document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-    document.getElementById(pageId).style.display = 'block';
-  };
+// Global user
+let currentUser = null;
 
-  // -----------------------
-  // Authentication
-  // -----------------------
-  let currentUser = null;
-  let userData = { credits: 10000, investments: {} };
+// ===== AUTH =====
+async function signUp() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  try {
+    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+    currentUser = userCredential.user;
 
-  auth.onAuthStateChanged(user => {
-    currentUser = user;
-    if (user) loadPortfolio();
+    // Create portfolio with default balance
+    await db.collection("users").doc(currentUser.uid).set({
+      balance: 10000,
+      investments: {}
+    });
+
+    showApp();
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+async function logIn() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  try {
+    const userCredential = await auth.signInWithEmailAndPassword(email, password);
+    currentUser = userCredential.user;
+    showApp();
+    loadPortfolio();
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+async function logOut() {
+  await auth.signOut();
+  currentUser = null;
+  document.getElementById("auth-section").classList.remove("hidden");
+  document.getElementById("navbar").classList.add("hidden");
+  hideAllPages();
+  document.getElementById("auth-section").classList.add("active");
+}
+
+// ===== UI TOGGLING =====
+function showApp() {
+  document.getElementById("auth-section").classList.add("hidden");
+  document.getElementById("navbar").classList.remove("hidden");
+  showPage("home");
+}
+
+function hideAllPages() {
+  document.querySelectorAll(".page").forEach(div => div.classList.add("hidden"));
+}
+
+function showPage(pageId) {
+  hideAllPages();
+  document.getElementById(pageId).classList.remove("hidden");
+}
+
+// ===== PORTFOLIO =====
+async function loadPortfolio() {
+  if (!currentUser) return;
+  const doc = await db.collection("users").doc(currentUser.uid).get();
+  if (doc.exists) {
+    const data = doc.data();
+    document.getElementById("balance").innerText = `Balance: ${data.balance} credits`;
+    displayPortfolio(data.investments);
+  }
+}
+
+function displayPortfolio(investments) {
+  const container = document.getElementById("investments");
+  container.innerHTML = "";
+  for (const [artist, amount] of Object.entries(investments)) {
+    const div = document.createElement("div");
+    div.textContent = `${artist}: ${amount} credits invested`;
+    container.appendChild(div);
+  }
+}
+
+// ===== TRADE (Search + Invest) =====
+async function searchArtist() {
+  const query = document.getElementById("search").value;
+  if (!query) return;
+
+  // Demo mock search (replace with Spotify later)
+  const resultsDiv = document.getElementById("results");
+  resultsDiv.innerHTML = "";
+
+  const demoArtists = [
+    { name: "Post Malone", followers: "35M" },
+    { name: "Drake", followers: "80M" }
+  ];
+
+  demoArtists.forEach(artist => {
+    const card = document.createElement("div");
+    card.innerHTML = `
+      <h3>${artist.name}</h3>
+      <p>Followers: ${artist.followers}</p>
+      <input type="number" id="amount-${artist.name}" placeholder="Amount"/>
+      <button onclick="invest('${artist.name}')">Invest</button>
+    `;
+    resultsDiv.appendChild(card);
+  });
+}
+
+async function invest(artist) {
+  const amountInput = document.getElementById(`amount-${artist}`).value;
+  const amount = parseInt(amountInput);
+  if (!amount || amount <= 0) return alert("Enter a valid amount");
+
+  const userRef = db.collection("users").doc(currentUser.uid);
+  const doc = await userRef.get();
+  const data = doc.data();
+
+  if (data.balance < amount) return alert("Not enough balance!");
+
+  const fee = Math.ceil(amount * 0.02);
+  const newBalance = data.balance - amount - fee;
+
+  const investments = data.investments || {};
+  investments[artist] = (investments[artist] || 0) + amount;
+
+  await userRef.update({
+    balance: newBalance,
+    investments
   });
 
-  window.signUp = async function() {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    try {
-      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-      currentUser = userCredential.user;
-      userData = { credits: 10000, investments: {} };
-      await db.collection('users').doc(currentUser.uid).set(userData);
-      alert('Sign up successful!');
-      showPage('home');
-    } catch (err) {
-      alert(err.message);
-    }
-  };
-
-  window.logIn = async function() {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    try {
-      const userCredential = await auth.signInWithEmailAndPassword(email, password);
-      currentUser = userCredential.user;
-      await loadPortfolio();
-      showPage('home');
-    } catch (err) {
-      alert(err.message);
-    }
-  };
-
-  window.logOut = function() {
-    auth.signOut();
-    currentUser = null;
-    alert('Logged out');
-    showPage('auth');
-  };
-
-  // -----------------------
-  // Portfolio
-  // -----------------------
-  async function loadPortfolio() {
-    if (!currentUser) return;
-
-    try {
-      const docRef = db.collection('users').doc(currentUser.uid);
-      const doc = await docRef.get();
-
-      if (doc.exists) {
-        userData = doc.data() || { credits: 10000, investments: {} };
-      } else {
-        // first time user
-        userData = { credits: 10000, investments: {} };
-        await docRef.set(userData);
-      }
-
-      // safe defaults
-      if (!userData.investments) userData.investments = {};
-      if (!userData.credits) userData.credits = 10000;
-
-      displayPortfolio();
-    } catch (err) {
-      console.error('Error loading portfolio:', err);
-    }
-  }
-
-  function displayPortfolio() {
-    // safe defaults
-    if (!userData) userData = { credits: 10000, investments: {} };
-    if (!userData.investments) userData.investments = {};
-    if (!userData.credits) userData.credits = 10000;
-
-    const summaryDiv = document.getElementById('portfolio-summary');
-    summaryDiv.innerHTML = `<p>Credits: ${userData.credits.toFixed(2)}</p>`;
-
-    const listDiv = document.getElementById('portfolio-list');
-    listDiv.innerHTML = '';
-
-    for (const [artist, credits] of Object.entries(userData.investments)) {
-      const item = document.createElement('div');
-      item.textContent = `${artist}: ${credits.toFixed(2)} credits`;
-      listDiv.appendChild(item);
-    }
-  }
-
-  // -----------------------
-  // Spotify Client Credentials
-  // -----------------------
-  const SPOTIFY_CLIENT_ID = "b0450273fe7d41a08cc3ea93a2e733ae";
-  const SPOTIFY_CLIENT_SECRET = "5b22a59a771b4f8885f887958bfddeb2";
-  let spotifyToken = "";
-
-  async function getSpotifyToken() {
-    const res = await fetch('https://accounts.spotify.com/api/token', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Basic ' + btoa(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`),
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: 'grant_type=client_credentials'
-    });
-    const data = await res.json();
-    spotifyToken = data.access_token;
-  }
-
-  // -----------------------
-  // Live Spotify Artist Search
-  // -----------------------
-  window.searchArtist = async function() {
-    const query = document.getElementById('search-input').value;
-    if (!query) return;
-
-    const resultsDiv = document.getElementById('artist-results');
-    resultsDiv.innerHTML = 'Searching...';
-
-    if (!spotifyToken) await getSpotifyToken();
-
-    const res = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=artist&limit=10`, {
-      headers: { 'Authorization': `Bearer ${spotifyToken}` }
-    });
-    const data = await res.json();
-    resultsDiv.innerHTML = '';
-
-    if (!data.artists.items.length) {
-      resultsDiv.textContent = 'No artists found.';
-      return;
-    }
-
-    data.artists.items.forEach(artist => {
-      const card = document.createElement('div');
-      card.className = 'artist-card';
-      card.innerHTML = `
-        <img src="${artist.images[0]?.url || ''}" alt="${artist.name}">
-        <h4>${artist.name}</h4>
-        <p>Followers: ${artist.followers.total.toLocaleString()}</p>
-        <p>Genres: ${artist.genres.join(', ')}</p>
-        <p>Popularity: ${artist.popularity}</p>
-        <button class="invest-btn" onclick="invest('${artist.name}')">Invest</button>
-      `;
-      resultsDiv.appendChild(card);
-    });
-  };
-
-  // -----------------------
-  // Investing Function
-  // -----------------------
-  window.invest = async function(artistName) {
-    if (!currentUser) return alert('Please log in first');
-
-    if (!userData.investments) userData.investments = {};
-
-    const creditsToInvest = parseInt(prompt(`Enter credits to invest in ${artistName}:`));
-    if (isNaN(creditsToInvest) || creditsToInvest <= 0) return alert('Invalid number');
-
-    const fee = creditsToInvest * 0.02;
-    if (creditsToInvest + fee > userData.credits) return alert('Not enough credits');
-
-    userData.credits -= creditsToInvest + fee;
-    userData.investments[artistName] = (userData.investments[artistName] || 0) + creditsToInvest;
-
-    try {
-      await db.collection('users').doc(currentUser.uid).set(userData);
-      displayPortfolio();
-      alert(`Invested ${creditsToInvest} credits in ${artistName} (Fee: ${fee.toFixed(2)})`);
-    } catch (err) {
-      console.error(err);
-      alert('Error saving investment.');
-      userData.credits += creditsToInvest + fee;
-      userData.investments[artistName] -= creditsToInvest;
-    }
-  };
-});
+  loadPortfolio();
+}
