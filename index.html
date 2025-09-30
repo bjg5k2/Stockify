@@ -2,62 +2,43 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Stockify</title>
+  <title>Music Stock Game</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/png" href="favicon.png">
 </head>
 <body>
-  <header>
-    <h1>Stockify</h1>
-    <nav>
-      <button onclick="showPage('home')">Home</button>
-      <button onclick="showPage('portfolio')">My Portfolio</button>
-      <button onclick="showPage('trade')">Trade</button>
-    </nav>
-  </header>
+  <!-- Authentication Page -->
+  <div id="auth" class="page">
+    <h1>Welcome to Music Stock Game</h1>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="signUp()">Sign Up</button>
+    <button onclick="logIn()">Log In</button>
+  </div>
 
-  <main>
-    <!-- Authentication -->
-    <section id="auth" class="page">
-      <h2>Log In / Sign Up</h2>
-      <input type="email" id="email" placeholder="Email">
-      <input type="password" id="password" placeholder="Password">
-      <div>
-        <button onclick="signUp()">Sign Up</button>
-        <button onclick="logIn()">Log In</button>
-        <button onclick="logOut()">Log Out</button>
-      </div>
-    </section>
+  <!-- Home Page -->
+  <div id="home" class="page" style="display:none;">
+    <h1>Music Stock Game</h1>
+    <button onclick="logOut()">Log Out</button>
 
-    <!-- Home Page -->
-    <section id="home" class="page" style="display:none;">
-      <h2>Welcome to Stockify!</h2>
-      <p>Trade "stock" in your favorite artists based on Spotify metrics.</p>
-      <h3>Trending Artists</h3>
-      <div id="trending-artists"></div>
-    </section>
-
-    <!-- Portfolio Page -->
-    <section id="portfolio" class="page" style="display:none;">
-      <h2>My Portfolio</h2>
+    <!-- Portfolio Section -->
+    <section>
+      <h2>Your Portfolio</h2>
       <div id="portfolio-summary"></div>
       <div id="portfolio-list"></div>
     </section>
 
-    <!-- Trade Page -->
-    <section id="trade" class="page" style="display:none;">
-      <h2>Trade Artists</h2>
+    <!-- Search Section -->
+    <section>
+      <h2>Search Artists</h2>
       <input type="text" id="search-input" placeholder="Search for an artist">
       <button onclick="searchArtist()">Search</button>
       <div id="artist-results"></div>
     </section>
-  </main>
+  </div>
 
-  <!-- Firebase Compat Scripts -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script src="main.js"></script>
 </body>
 </html>
