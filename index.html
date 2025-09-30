@@ -7,10 +7,11 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Header/Navbar -->
+
+  <!-- Header / Navbar -->
   <header>
     <h1>Stockify</h1>
-    <nav id="navbar">
+    <nav id="navbar" class="hidden">
       <div id="navbar-left">
         <button data-page="home">Home</button>
         <button data-page="portfolio">Portfolio</button>
@@ -21,31 +22,40 @@
   </header>
 
   <div class="container">
-    <!-- Pages -->
-    <div id="home" class="page active section">
-      <div class="card"><h2>Welcome to Stockify</h2><p>Invest your credits in your favorite artists!</p></div>
+
+    <!-- Home -->
+    <div id="home" class="page">
+      <div class="card">
+        <h2>Welcome to Stockify</h2>
+        <p>Invest your credits in your favorite artists and build your portfolio!</p>
+      </div>
     </div>
 
-    <div id="portfolio" class="page hidden section">
+    <!-- Portfolio -->
+    <div id="portfolio" class="page">
       <h2>Your Portfolio</h2>
       <div id="balance">Balance: 0 credits</div>
       <div id="investments"></div>
     </div>
 
-    <div id="trade" class="page hidden section">
+    <!-- Trade -->
+    <div id="trade" class="page">
       <h2>Trade Artists</h2>
       <input type="text" id="search" placeholder="Search for an artist" />
       <button id="search-btn">Search</button>
       <div id="results" class="grid"></div>
     </div>
+
   </div>
 
-  <!-- Firebase compat -->
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-  <script src="config.js" defer></script>
-  <script src="main.js" defer></script>
+  <!-- Config & Main JS -->
+  <script src="config.js"></script>
+  <script src="main.js"></script>
+
 </body>
 </html>
