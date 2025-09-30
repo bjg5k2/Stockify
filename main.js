@@ -1,6 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-
-  // Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyBF5gzPThKD1ga_zpvtdBpiQFsexbEpZyY",
     authDomain: "stockify-75531.firebaseapp.com",
@@ -12,9 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
 
-  // Redirect to login if not signed in
+  // Redirect to login if not logged in
   auth.onAuthStateChanged(user => {
-    if(!user) window.location.href = 'login.html';
+    if(!user) window.location.href='index.html';
   });
 
   // Page navigation
@@ -30,10 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Logout
   document.getElementById('logout-btn').addEventListener('click', async ()=>{
     await auth.signOut();
-    window.location.href = 'login.html';
+    window.location.href='index.html';
   });
 
-  // --- Placeholder portfolio logic ---
+  // Portfolio placeholder
   let balance=10000;
   let investments={};
 
@@ -52,5 +50,4 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   window.displayPortfolio=displayPortfolio;
-
 });
