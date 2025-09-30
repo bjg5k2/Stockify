@@ -16,8 +16,20 @@
   </header>
 
   <main>
+    <!-- Authentication -->
+    <section id="auth" class="page">
+      <h2>Log In / Sign Up</h2>
+      <input type="email" id="email" placeholder="Email">
+      <input type="password" id="password" placeholder="Password">
+      <div>
+        <button onclick="signUp()">Sign Up</button>
+        <button onclick="logIn()">Log In</button>
+        <button onclick="logOut()">Log Out</button>
+      </div>
+    </section>
+
     <!-- Home Page -->
-    <section id="home" class="page">
+    <section id="home" class="page" style="display:none;">
       <h2>Welcome to Stockify!</h2>
       <p>Trade "stock" in your favorite artists based on Spotify metrics.</p>
     </section>
@@ -44,3 +56,4 @@
   <script src="main.js"></script>
 </body>
 </html>
+
