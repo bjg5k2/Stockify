@@ -21,13 +21,15 @@ auth.onAuthStateChanged(user => {
     currentUser = user;
     document.getElementById("auth-section").style.display = "none";
     document.getElementById("logout-btn").style.display = "inline-block";
-    document.getElementById("welcome-section")?.style.setProperty("display", "block");
+    const welcomeSection = document.getElementById("welcome-section");
+    if (welcomeSection) welcomeSection.style.display = "block";
     loadUserData(currentUser.uid);
   } else {
     currentUser = null;
     document.getElementById("auth-section").style.display = "block";
     document.getElementById("logout-btn").style.display = "none";
-    document.getElementById("welcome-section")?.style.setProperty("display", "none");
+    const welcomeSection = document.getElementById("welcome-section");
+    if (welcomeSection) welcomeSection.style.display = "none";
   }
 });
 
@@ -118,4 +120,59 @@ function updateTopPerformers() {
     topDiv.innerHTML = "<p>No investments yet.</p>";
     return;
   }
-  const sorted = Object.en
+  const sorted = Object.entries(userPortfolio).sort((a,b)=>b[1].credits-a[1].credits);
+  for (let [artistId, data] of sorted) {
+    const card = document.createElement("div");
+    card.className = "top-card";
+    card.innerHTML = `<h3>${data.name}</h3>
+                      <p>Credits: ${data.credits}</p>`;
+    topDiv.appendChild(card);
+  }
+}
+
+// -------------------- Investment Function --------------------
+async function invest(artistId, artistName) {
+  if (!currentUser) return alert("You must be logged in to invest.");
+  const amount = parseInt(prompt(`You have ${userCredits} credits. Enter amount to invest in ${artistName}:`));
+  if (isNaN(amount) || amount <= 0) return alert("Enter a valid number");
+  if (amount > userCredits) return alert("Not enough credits");
+
+  const fee = Math.ceil(amount * 0.02);
+  const totalCost = amount + fee;
+  if (totalCost > userCredits) return alert(`Not enough credits for 2% fee. Total cost: ${totalCost}`);
+
+  userCredits -= totalCost;
+  if (!userPortfolio[artistId]) userPortfolio[artistId] = { name: artistName, credits: 0 };
+  userPortfolio[artistId].credits += amount;
+
+  updatePortfolioUI();
+  updateTopPerformers();
+  await saveUserData();
+  alert(`Invested ${amount} credits in ${artistName}!`);
+}
+
+// -------------------- Spotify Search Function --------------------
+async function searchArtist() {
+  const query = document.getElementById("search-input").value;
+  if (!query) return;
+  // Replace with actual Spotify API fetch later
+  const mockResults = [
+    { id: "1", name: "Ariana Grande", image: "https://via.placeholder.com/150" },
+    { id: "2", name: "Drake", image: "https://via.placeholder.com/150" }
+  ];
+  const resultsDiv = document.getElementById("artist-results");
+  resultsDiv.innerHTML = "";
+  mockResults.forEach(artist => {
+    if (!artist.name.toLowerCase().includes(query.toLowerCase())) return;
+    const card = document.createElement("div");
+    card.className = "artist-card";
+    card.innerHTML = `<img src="${artist.image}" alt="${artist.name}">
+                      <h3>${artist.name}</h3>
+                      <button class="invest-btn" onclick="invest('${artist.id}','${artist.name}')">Invest</button>`;
+    resultsDiv.appendChild(card);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Auth state listener handles loading user data
+});
