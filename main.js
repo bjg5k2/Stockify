@@ -151,4 +151,30 @@ document.addEventListener('DOMContentLoaded', () => {
           <p>Popularity: ${artist.popularity || 'N/A'}</p>
           <button class="invest-btn" onclick="invest('${artist.name}')">Invest</button>
         `;
-        resultsDiv
+        resultsDiv.appendChild(card);
+      });
+
+    } catch (err) {
+      console.error(err);
+      resultsDiv.innerHTML = '<p>Error fetching artists. Check console.</p>';
+    }
+  };
+
+  // -----------------------
+  // Investment Function
+  // -----------------------
+  window.invest = function(artistName) {
+    if (!currentUser) return alert('Please log in first');
+    const creditsToInvest = parseInt(prompt(`Enter credits to invest in ${artistName}:`));
+    if (isNaN(creditsToInvest) || creditsToInvest <= 0) return alert('Invalid number');
+    const fee = creditsToInvest * 0.02;
+    if (creditsToInvest + fee > userData.credits) return alert('Not enough credits');
+
+    userData.credits -= creditsToInvest + fee;
+    userData.investments[artistName] = (userData.investments[artistName] || 0) + creditsToInvest;
+
+    db.collection('users').doc(currentUser.uid).set(userData);
+    displayPortfolio();
+    alert(`Invested ${creditsToInvest} credits in ${artistName} (Fee: ${fee.toFixed(2)})`);
+  };
+});
