@@ -9,11 +9,13 @@
 <body>
 
 <header>
-  <h1>Stockify</h1>
-  <nav id="navbar">
+  <nav id="navbar-left">
     <button data-page="home">Home</button>
     <button data-page="portfolio">Portfolio</button>
     <button data-page="trade">Trade</button>
+  </nav>
+  <h1>Stockify</h1>
+  <nav id="navbar-right">
     <button id="logout-btn">Log Out</button>
   </nav>
 </header>
@@ -42,6 +44,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="main.js"></script>
 
 </body>
