@@ -1,159 +1,36 @@
 /* -------------------- Global -------------------- */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: 'Poppins', sans-serif;
-  background: #e0f7eb;
-  color: #2f6b5b;
-  line-height: 1.6;
-}
+* { box-sizing: border-box; margin:0; padding:0; }
+body { font-family: 'Poppins', sans-serif; background: #e0f7eb; color: #2f6b5b; line-height: 1.6; }
 
 /* -------------------- Navigation -------------------- */
-nav {
-  background: #2f6b5b;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 1rem 0;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-}
-
-.nav-brand {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #e0f7eb;
-  margin-bottom: 0.5rem;
-}
-
-.nav-buttons {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.nav-buttons.center {
-  justify-content: center;
-}
-
-.nav-buttons button, .nav-buttons a button {
-  padding: 0.5rem 1.2rem;
-  border-radius: 12px;
-  border: none;
-  background: #52a78f;
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s, transform 0.2s;
-}
-
-.nav-buttons button:hover {
-  background: #3d826b;
-  transform: translateY(-2px);
-}
-
-.nav-buttons button:disabled {
-  background: #a3e4d7;
-  cursor: default;
-}
+nav { background: #2f6b5b; display:flex; flex-direction:column; align-items:center; padding:1rem 0; box-shadow:0 3px 6px rgba(0,0,0,0.15); }
+.nav-brand { font-size:1.8rem; font-weight:700; color:#e0f7eb; margin-bottom:0.5rem; }
+.nav-buttons { display:flex; gap:0.5rem; }
+.nav-buttons.center { justify-content:center; }
+.nav-buttons button, .nav-buttons a button { padding:0.5rem 1.2rem; border-radius:12px; border:none; background:#52a78f; color:white; font-weight:600; cursor:pointer; transition: background 0.3s, transform 0.2s; }
+.nav-buttons button:hover { background:#3d826b; transform:translateY(-2px); }
+.nav-buttons button:disabled { background:#a3e4d7; cursor:default; }
 
 /* -------------------- Main -------------------- */
-main {
-  padding: 2rem;
-  max-width: 1000px;
-  margin: auto;
-}
-
-h1, h2 {
-  margin-bottom: 1rem;
-}
-
-section p {
-  margin-bottom: 1rem;
-}
+main { padding:2rem; max-width:1000px; margin:auto; }
+h1,h2 { margin-bottom:1rem; }
+section p { margin-bottom:1rem; }
 
 /* -------------------- Search Bar -------------------- */
-.search-bar {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.search-bar input {
-  flex: 1;
-  padding: 0.5rem 1rem;
-  border-radius: 12px;
-  border: 1px solid #52a78f;
-  font-size: 1rem;
-}
-
-.search-bar button {
-  padding: 0.5rem 1rem;
-  border-radius: 12px;
-  border: none;
-  background: #52a78f;
-  color: white;
-  font-weight: 600;
-}
-
-.search-bar button:hover {
-  background: #3d826b;
-}
+.search-bar { display:flex; gap:0.5rem; margin-bottom:1rem; }
+.search-bar input { flex:1; padding:0.5rem 1rem; border-radius:12px; border:1px solid #52a78f; font-size:1rem; }
+.search-bar button { padding:0.5rem 1rem; border-radius:12px; border:none; background:#52a78f; color:white; font-weight:600; }
+.search-bar button:hover { background:#3d826b; }
 
 /* -------------------- Cards -------------------- */
-.artist-card, .portfolio-card, .top-card {
-  background: #a3e4d7;
-  border-radius: 16px;
-  padding: 1rem;
-  width: 200px;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-  text-align: center;
-  transition: transform 0.2s, box-shadow 0.2s;
-  margin-bottom: 1rem;
-}
-
-.artist-card:hover, .portfolio-card:hover, .top-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-}
-
-.artist-card img {
-  width: 100%;
-  border-radius: 12px;
-  margin-bottom: 0.5rem;
-}
-
-button.invest-btn {
-  margin-top: 0.5rem;
-  padding: 0.5rem;
-  border: none;
-  border-radius: 12px;
-  background: #2f6b5b;
-  color: white;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-button.invest-btn:hover {
-  background: #1f4b3d;
-}
+.artist-card, .portfolio-card, .top-card { background:#a3e4d7; border-radius:16px; padding:1rem; width:200px; box-shadow:0 3px 6px rgba(0,0,0,0.15); text-align:center; transition:transform 0.2s, box-shadow 0.2s; margin-bottom:1rem; }
+.artist-card:hover, .portfolio-card:hover, .top-card:hover { transform:translateY(-5px); box-shadow:0 6px 12px rgba(0,0,0,0.2); }
+.artist-card img { width:100%; border-radius:12px; margin-bottom:0.5rem; }
+button.invest-btn { margin-top:0.5rem; padding:0.5rem; border:none; border-radius:12px; background:#2f6b5b; color:white; cursor:pointer; font-weight:600; }
+button.invest-btn:hover { background:#1f4b3d; }
 
 /* -------------------- Flex Containers -------------------- */
-#artist-results, #portfolio-list, #top-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
+#artist-results, #portfolio-list, #top-list { display:flex; flex-wrap:wrap; gap:1rem; }
 
 /* -------------------- Responsive -------------------- */
-@media (max-width: 600px) {
-  .artist-card, .portfolio-card, .top-card {
-    width: 100%;
-  }
-  .nav-buttons {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-}
+@media(max-width:600px){ .artist-card,.portfolio-card,.top-card{width:100%;} .nav-buttons{flex-direction:column; gap:0.5rem;} }
