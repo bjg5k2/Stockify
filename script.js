@@ -1,6 +1,6 @@
 // ----- Firebase Setup -----
 const firebaseConfig = {
-  apiKey: "AIzaSyBF5gzPThKD1ga_zpvtdBpiQFsexbEpZyY",
+  apiKey: "AIzaSyBF5gzPThKD1ga_zpvtdBpiQFsexbEpZyY", // <-- Replace with the API key from Firebase Console
   authDomain: "stockify-75531.firebaseapp.com",
   projectId: "stockify-75531",
   storageBucket: "stockify-75531.firebasestorage.app",
