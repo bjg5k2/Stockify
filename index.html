@@ -9,6 +9,7 @@
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 </head>
 <body>
   <nav>
@@ -17,11 +18,23 @@
       <button disabled>Home</button>
       <a href="portfolio.html"><button>My Portfolio</button></a>
       <a href="trade.html"><button>Trade</button></a>
+      <button id="logout-btn" onclick="logOut()" style="display:none;">Logout</button>
     </div>
   </nav>
 
   <main>
-    <section>
+    <section id="auth-section">
+      <h2>Sign Up / Log In</h2>
+      <div>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="signUp()">Sign Up</button>
+        <button onclick="logIn()">Log In</button>
+      </div>
+      <p id="auth-msg"></p>
+    </section>
+
+    <section id="welcome-section" style="display:none;">
       <h1>Welcome to Stockify!</h1>
       <p>Invest in your favorite artists and track their listener growth. See who’s trending and make your moves!</p>
 
