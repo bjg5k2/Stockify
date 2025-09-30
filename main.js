@@ -1,34 +1,20 @@
-// main.js
 let auth, db, spotifyConfig;
+let _spotifyToken = null;
+let _spotifyExpiry = 0;
 
-document.addEventListener('DOMContentLoaded', () => {
-  if (!window.appConfig) return alert('App config missing!');
-  try {
-    firebase.initializeApp(window.appConfig.firebase);
-    auth = firebase.auth();
-    db = firebase.firestore();
-    spotifyConfig = window.appConfig.spotify;
+document.addEventListener('DOMContentLoaded', async () => {
+  // Initialize Firebase
+  firebase.initializeApp(window.appConfig.firebase);
+  auth = firebase.auth();
+  db = firebase.firestore();
+  spotifyConfig = window.appConfig.spotify;
 
-    auth.onAuthStateChanged(user => {
-      if (!user) window.location.href = 'login.html';
-    });
+  // Redirect to login if not signed in
+  auth.onAuthStateChanged(user => {
+    if (!user) window.location.href = 'login.html';
+  });
 
-    initializeApp();
-  } catch(err) {
-    console.error('Failed to init app', err);
-    alert('Failed to initialize app. Check console.');
-  }
-});
-
-function initializeApp() {
-  window.showPage = function(pageId) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    const page = document.getElementById(pageId);
-    if (page) page.classList.add('active');
-
-    if(pageId === 'portfolio') loadPortfolio();
-  };
-
+  // Navbar buttons
   document.querySelectorAll('#navbar-left button[data-page]').forEach(btn => {
     btn.addEventListener('click', () => showPage(btn.dataset.page));
   });
@@ -39,6 +25,15 @@ function initializeApp() {
   });
 
   document.getElementById('search-btn').addEventListener('click', searchArtist);
+});
+
+// Show/hide pages
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const page = document.getElementById(pageId);
+  if (page) page.classList.add('active');
+
+  if (pageId === 'portfolio') loadPortfolio();
 }
 
 // Portfolio
@@ -48,10 +43,7 @@ async function loadPortfolio() {
   const ref = db.collection('users').doc(user.uid);
   const snap = await ref.get();
   let data = snap.exists ? snap.data() : { balance: 10000, investments: {} };
-
   if (!data.investments) data.investments = {};
-  if (typeof data.balance !== 'number') data.balance = Number(data.balance) || 10000;
-
   document.getElementById('balance').innerText = `Balance: ${data.balance} credits`;
   displayPortfolio(data.investments);
 }
@@ -73,12 +65,9 @@ function displayPortfolio(investments = {}) {
 }
 
 // Spotify
-let _spotifyToken = null, _spotifyExpiry = 0;
-
 async function getSpotifyToken() {
   const now = Date.now();
   if (_spotifyToken && now < _spotifyExpiry - 5000) return _spotifyToken;
-
   const res = await fetch('https://accounts.spotify.com/api/token', {
     method: 'POST',
     headers: {
@@ -93,6 +82,7 @@ async function getSpotifyToken() {
   return _spotifyToken;
 }
 
+// Search & invest
 async function searchArtist() {
   const q = document.getElementById('search').value;
   if (!q) return;
@@ -106,7 +96,6 @@ async function searchArtist() {
     });
     const json = await resp.json();
     const items = json.artists?.items || [];
-
     if (!items.length) {
       results.innerHTML = '<div class="card">No artists found.</div>';
       return;
@@ -125,7 +114,8 @@ async function searchArtist() {
         <input type="number" id="amount-${idSafe}" placeholder="Credits to invest" min="1"/>
         <button data-id="${idSafe}" data-name="${artist.name}">Invest</button>
       `;
-      card.querySelector('button').addEventListener('click', () => {
+      const btn = card.querySelector('button');
+      btn.addEventListener('click', () => {
         const amt = parseInt(document.getElementById(`amount-${idSafe}`).value, 10);
         invest(artist.name, amt);
       });
@@ -137,7 +127,6 @@ async function searchArtist() {
   }
 }
 
-// Invest
 async function invest(artistName, amount) {
   const user = auth.currentUser;
   if (!user) return alert('Please log in first');
@@ -146,7 +135,6 @@ async function invest(artistName, amount) {
   const ref = db.collection('users').doc(user.uid);
   const snap = await ref.get();
   let data = snap.exists ? snap.data() : { balance: 10000, investments: {} };
-
   const balance = Number(data.balance || 0);
   const investments = data.investments || {};
 
