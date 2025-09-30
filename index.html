@@ -3,46 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stockify</title>
+<title>Stockify - Login</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header>
-  <h1>Stockify</h1>
-  <nav id="navbar">
-    <button data-page="home">Home</button>
-    <button data-page="portfolio">Portfolio</button>
-    <button data-page="trade">Trade</button>
-    <button id="logout-btn">Log Out</button>
-  </nav>
-</header>
-
-<div class="container">
-  <div id="home" class="page active section">
-    <div class="card">
-      <h2>Welcome to Stockify</h2>
-      <p>Invest your credits in your favorite artists and build your portfolio!</p>
-    </div>
-  </div>
-
-  <div id="portfolio" class="page section">
-    <h2>Your Portfolio</h2>
-    <div id="balance">Balance: 10000 credits</div>
-    <div id="investments"></div>
-  </div>
-
-  <div id="trade" class="page section">
-    <h2>Trade Artists</h2>
-    <input type="text" id="search" placeholder="Search for an artist">
-    <button id="search-btn">Search</button>
-    <div id="results" class="grid"></div>
+<div class="auth-card">
+  <h2>Welcome to Stockify</h2>
+  <p>Sign up or log in to access your music investments</p>
+  <input type="email" id="email" placeholder="Email" required />
+  <input type="password" id="password" placeholder="Password" required />
+  <div class="auth-actions">
+    <button id="signup-btn">Sign Up</button>
+    <button class="secondary" id="login-btn">Log In</button>
   </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="main.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBF5gzPThKD1ga_zpvtdBpiQFsexbEpZyY",
+    authDomain: "stockify-75531.firebaseapp.com",
+    projectId: "stockify-75531",
+    storageBucket: "stockify-75531.firebasestorage.app",
+    messagingSenderId: "831334536771",
+    appId: "1:831334536771:web:b142abcead4df128c826f6"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+
+  // If already logged in, go to app
+  auth.onAuthStateChanged(user => {
+    if(user) window.location.href = 'app.html';
+  });
+
+  document.getElementById('signup-btn').addEventListener('click', async () => {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    try {
+      await auth.createUserWithEmailAndPassword(email,password);
+      window.location.href = 'app.html';
+    } catch(err){ alert(err.message); }
+  });
+
+  document.getElementById('login-btn').addEventListener('click', async () => {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    try {
+      await auth.signInWithEmailAndPassword(email,password);
+      window.location.href = 'app.html';
+    } catch(err){ alert(err.message); }
+  });
+</script>
 
 </body>
 </html>
