@@ -1,48 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Music Stock Game</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js" defer></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js" defer></script>
-  <script src="script.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Music Stock Game</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>Music Stock Game</h1>
-    <nav>
-      <button onclick="showPage('home')">Home</button>
-      <button onclick="showPage('portfolio')">My Portfolio</button>
-      <button onclick="showPage('trade')">Trade</button>
-    </nav>
-  </header>
+  <nav>
+    <button onclick="showPage('home')">Home</button>
+    <button onclick="showPage('portfolio')">My Portfolio</button>
+    <button onclick="showPage('trade')">Trade</button>
+  </nav>
 
-  <!-- Login/Signup -->
-  <section id="auth-section">
-    <input id="email" type="email" placeholder="Email">
-    <input id="password" type="password" placeholder="Password">
-    <button onclick="signUp()">Sign Up</button>
-    <button onclick="logIn()">Log In</button>
-  </section>
+  <main>
+    <!-- Home Page -->
+    <section id="home-page" class="page">
+      <h1>Welcome to Music Stock Game!</h1>
+      <p>Invest in your favorite artists and track their listener growth!</p>
+    </section>
 
-  <!-- Pages -->
-  <section id="home-page" class="page" style="display:none;">
-    <h2>Welcome!</h2>
-    <p>Search for artists and invest in their success.</p>
-    <input id="search-input" type="text" placeholder="Search artist">
-    <button onclick="searchArtist()">Search</button>
-    <div id="artist-results"></div>
-  </section>
+    <!-- Portfolio Page -->
+    <section id="portfolio-page" class="page" style="display:none">
+      <h2>My Portfolio</h2>
+      <div id="portfolio-list"></div>
+    </section>
 
-  <section id="portfolio-page" class="page" style="display:none;">
-    <h2>My Portfolio</h2>
-    <div id="portfolio-list"></div>
-  </section>
+    <!-- Trade Page -->
+    <section id="trade-page" class="page" style="display:none">
+      <h2>Trade / Search Artists</h2>
+      <input type="text" id="search-input" placeholder="Search for an artist...">
+      <button onclick="searchArtist()">Search</button>
+      <div id="artist-results"></div>
+    </section>
+  </main>
 
-  <section id="trade-page" class="page" style="display:none;">
-    <h2>Trade</h2>
-    <div id="trade-section"></div>
-  </section>
+  <script src="script.js"></script>
 </body>
 </html>
