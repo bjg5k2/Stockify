@@ -1,8 +1,8 @@
-// ----- Portfolio (shared with other pages if needed) -----
-let userPortfolio = {}; // key: artistId, value: {name, credits}
+// Portfolio tracking (in-memory)
+let userPortfolio = {};
 let userCredits = 10000;
 
-// ----- Spotify API -----
+// Spotify API
 const clientId = "b0450273fe7d41a08cc3ea93a2e733ae";
 const clientSecret = "5b22a59a771b4f8885f887958bfddeb2";
 
@@ -19,7 +19,7 @@ async function getToken() {
   return data.access_token;
 }
 
-// ----- Search Artists -----
+// Search artists
 async function searchArtist() {
   const name = document.getElementById("search-input").value;
   if (!name) return alert("Enter an artist name");
@@ -57,7 +57,7 @@ async function searchArtist() {
   }
 }
 
-// ----- Investing -----
+// Invest
 function invest(artistId, artistName) {
   const amount = prompt(`You have ${userCredits} credits. Enter amount to invest in ${artistName}:`);
   const investAmount = parseInt(amount);
