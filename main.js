@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+
   // Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyBF5gzPThKD1ga_zpvtdBpiQFsexbEpZyY",
@@ -11,57 +12,45 @@ document.addEventListener('DOMContentLoaded', () => {
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
 
-  let currentUser = null;
+  // Redirect to login if not signed in
+  auth.onAuthStateChanged(user => {
+    if(!user) window.location.href = 'login.html';
+  });
 
-  function showAuth() {
-    document.getElementById('auth-section').classList.add('active');
-    document.getElementById('main-header').classList.add('hidden');
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  }
-
-  function showApp() {
-    document.getElementById('auth-section').classList.remove('active');
-    document.getElementById('main-header').classList.remove('hidden');
-    showPage('home');
-  }
-
-  window.showPage = function(pageId) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    const page = document.getElementById(pageId);
+  // Page navigation
+  window.showPage = function(pageId){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    const page=document.getElementById(pageId);
     if(page) page.classList.add('active');
   };
-
-  // Login / Sign up buttons
-  document.getElementById('signup-btn').addEventListener('click', async () => {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    try {
-      const uc = await auth.createUserWithEmailAndPassword(email,password);
-      currentUser = uc.user;
-      showApp();
-    } catch(err){ alert(err.message); }
+  document.querySelectorAll('#navbar button[data-page]').forEach(btn=>{
+    btn.addEventListener('click',()=>showPage(btn.dataset.page));
   });
 
-  document.getElementById('login-btn').addEventListener('click', async () => {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    try {
-      const uc = await auth.signInWithEmailAndPassword(email,password);
-      currentUser = uc.user;
-      showApp();
-    } catch(err){ alert(err.message); }
-  });
-
-  document.getElementById('logout-btn').addEventListener('click', async () => {
+  // Logout
+  document.getElementById('logout-btn').addEventListener('click', async ()=>{
     await auth.signOut();
-    currentUser = null;
-    showAuth();
+    window.location.href = 'login.html';
   });
 
-  // Keep UI in sync if already signed in
-  auth.onAuthStateChanged(user => {
-    currentUser = user;
-    if(user) showApp();
-    else showAuth();
-  });
+  // --- Placeholder portfolio logic ---
+  let balance=10000;
+  let investments={};
+
+  function displayPortfolio(){
+    document.getElementById('balance').innerText=`Balance: ${balance} credits`;
+    const container=document.getElementById('investments');
+    container.innerHTML='';
+    const entries=Object.entries(investments);
+    if(!entries.length){ container.innerHTML='<div class="card">No investments yet.</div>'; return; }
+    entries.forEach(([artist,amt])=>{
+      const d=document.createElement('div');
+      d.className='investment-item card';
+      d.innerHTML=`<div>${artist}</div><div><strong>${amt} credits</strong></div>`;
+      container.appendChild(d);
+    });
+  }
+
+  window.displayPortfolio=displayPortfolio;
+
 });
