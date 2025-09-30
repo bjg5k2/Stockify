@@ -7,25 +7,40 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="login-page" class="page active">
+  <div id="login-page">
     <div class="auth-card">
       <h2>Welcome to Stockify</h2>
       <p>Sign in to manage your music investments</p>
       <input type="email" id="email" placeholder="Email" required />
       <input type="password" id="password" placeholder="Password" required />
       <div class="auth-actions">
-        <button id="signup-btn">Sign Up</button>
-        <button id="login-btn" class="secondary">Log In</button>
+        <button id="login-btn">Log In</button>
       </div>
     </div>
   </div>
 
-  <!-- Firebase compat -->
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  
-  <script src="config.js" defer></script>
-  <script src="login.js" defer></script>
+
+  <script src="config.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      firebase.initializeApp(window.appConfig.firebase);
+      const auth = firebase.auth();
+
+      document.getElementById('login-btn').addEventListener('click', async () => {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        try {
+          await auth.signInWithEmailAndPassword(email, password);
+          window.location.href = 'index.html';
+        } catch(err) {
+          alert(err.message);
+        }
+      });
+    });
+  </script>
 </body>
 </html>
