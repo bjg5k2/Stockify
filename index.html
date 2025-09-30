@@ -3,48 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Music Stock Game</title>
+<title>Stockify - Home</title>
 <link rel="stylesheet" href="style.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
   <nav>
-    <div class="nav-brand">🎵 Music Stock Game</div>
-    <div class="nav-buttons">
-      <button onclick="showPage('home')">Home</button>
-      <button onclick="showPage('portfolio')">My Portfolio</button>
-      <button onclick="showPage('trade')">Trade</button>
+    <div class="nav-brand">Stockify</div>
+    <div class="nav-buttons center">
+      <button disabled>Home</button>
+      <a href="portfolio.html"><button>My Portfolio</button></a>
+      <a href="trade.html"><button>Trade</button></a>
     </div>
   </nav>
 
   <main>
-    <!-- Home Page -->
-    <section id="home-page" class="page">
-      <h1>Welcome to Music Stock Game!</h1>
-      <p>Invest in your favorite artists and track their listener growth!</p>
+    <section>
+      <h1>Welcome to Stockify!</h1>
+      <p>Invest in your favorite artists and track their listener growth. See who’s trending and make your moves!</p>
+
       <div id="top-performers">
         <h2>Top Performers</h2>
-        <div id="top-list"></div>
+        <div id="top-list">
+          <p>No investments yet.</p>
+        </div>
       </div>
-    </section>
-
-    <!-- Portfolio Page -->
-    <section id="portfolio-page" class="page" style="display:none">
-      <h2>My Portfolio</h2>
-      <div id="portfolio-list"></div>
-    </section>
-
-    <!-- Trade Page -->
-    <section id="trade-page" class="page" style="display:none">
-      <h2>Trade / Search Artists</h2>
-      <div class="search-bar">
-        <input type="text" id="search-input" placeholder="Search for an artist...">
-        <button onclick="searchArtist()">Search</button>
-      </div>
-      <div id="artist-results"></div>
     </section>
   </main>
 
-  <script src="script.js"></script>
+  <script src="portfolio.js"></script>
 </body>
 </html>
