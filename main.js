@@ -1,19 +1,7 @@
+let balance = 10000;
+let investments = {};
+
 document.addEventListener('DOMContentLoaded', () => {
-  const firebaseConfig = {
-    apiKey: "AIzaSyBF5gzPThKD1ga_zpvtdBpiQFsexbEpZyY",
-    authDomain: "stockify-75531.firebaseapp.com",
-    projectId: "stockify-75531",
-    storageBucket: "stockify-75531.firebasestorage.app",
-    messagingSenderId: "831334536771",
-    appId: "1:831334536771:web:b142abcead4df128c826f6"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-
-  let currentUser = null;
-
   function hideAllPages() {
     document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
   }
@@ -22,82 +10,78 @@ document.addEventListener('DOMContentLoaded', () => {
     hideAllPages();
     const el = document.getElementById(pageId);
     if (el) el.classList.add('active');
-    if (pageId === 'portfolio') loadPortfolio();
+    if (pageId === 'portfolio') displayPortfolio();
   };
 
-  function showAppUI() {
-    document.getElementById('auth-section').classList.remove('active');
-    document.getElementById('navbar').classList.remove('hidden');
-    showPage('home');
-  }
-
-  function showAuthUI() {
-    document.getElementById('auth-section').classList.add('active');
-    document.getElementById('navbar').classList.add('hidden');
-    hideAllPages();
-  }
-
-  // ----------- Auth functions -----------
-  window.signUp = async function() {
-    const email = document.querySelector('#auth-section input[type="email"]').value;
-    const password = document.querySelector('#auth-section input[type="password"]').value;
-    try {
-      const uc = await auth.createUserWithEmailAndPassword(email, password);
-      currentUser = uc.user;
-      await db.collection('users').doc(currentUser.uid).set({ balance:10000, investments:{} });
-      showAppUI();
-      loadPortfolio();
-    } catch(err){ alert(err.message || 'Sign up error'); }
-  };
-
-  window.logIn = async function() {
-    const email = document.querySelector('#auth-section input[type="email"]').value;
-    const password = document.querySelector('#auth-section input[type="password"]').value;
-    try {
-      const uc = await auth.signInWithEmailAndPassword(email, password);
-      currentUser = uc.user;
-      showAppUI();
-      loadPortfolio();
-    } catch(err){ alert(err.message || 'Login error'); }
-  };
-
-  window.logOut = async function() {
-    await auth.signOut();
-    currentUser = null;
-    showAuthUI();
-  };
-
-  // ----------- Firebase state listener -----------
-  auth.onAuthStateChanged(user => {
-    currentUser = user;
-    if(user) showAppUI();
-    else showAuthUI(); // never hide login immediately
-  });
-
-  async function loadPortfolio() {
-    if(!currentUser) return;
-    const ref = db.collection('users').doc(currentUser.uid);
-    const snap = await ref.get();
-    const data = snap.exists ? snap.data() || {} : { balance:10000, investments:{} };
-    if(!data.investments) data.investments={};
-    if(typeof data.balance!=='number') data.balance=Number(data.balance)||10000;
-    document.getElementById('balance').innerText=`Balance: ${data.balance} credits`;
-    displayPortfolio(data.investments);
-  }
-
-  function displayPortfolio(investments={}) {
+  function displayPortfolio() {
     const container = document.getElementById('investments');
-    container.innerHTML='';
+    container.innerHTML = '';
+    document.getElementById('balance').innerText = `Balance: ${balance} credits`;
     const entries = Object.entries(investments);
-    if(!entries.length){ container.innerHTML='<div class="card">No investments yet.</div>'; return; }
-    entries.forEach(([artist, amt])=>{
-      const d=document.createElement('div');
-      d.className='investment-item card';
-      d.innerHTML=`<div>${escapeHtml(artist)}</div><div><strong>${Number(amt).toLocaleString()} credits</strong></div>`;
+    if (!entries.length) { container.innerHTML = '<div class="card">No investments yet.</div>'; return; }
+    entries.forEach(([artist, amt]) => {
+      const d = document.createElement('div');
+      d.className = 'investment-item card';
+      d.innerHTML = `<div>${artist}</div><div><strong>${amt} credits</strong></div>`;
       container.appendChild(d);
     });
   }
 
-  function escapeHtml(str){ return (typeof str==='string')?str.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])):str; }
+  // --- Spotify search ---
+  const SPOTIFY_CLIENT_ID = "b0450273fe7d41a08cc3ea93a2e733ae";
+  const SPOTIFY_CLIENT_SECRET = "5b22a59a771b4f8885f887958bfddeb2";
+  let _spotifyToken = null;
+  let _spotifyTokenExpiry = 0;
 
+  async function getSpotifyToken() {
+    const now = Date.now();
+    if (_spotifyToken && now < _spotifyTokenExpiry - 5000) return _spotifyToken;
+    const res = await fetch('https://accounts.spotify.com/api/token', {
+      method:'POST',
+      headers:{ 'Authorization':'Basic '+btoa(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`), 'Content-Type':'application/x-www-form-urlencoded' },
+      body:'grant_type=client_credentials'
+    });
+    const j = await res.json();
+    _spotifyToken = j.access_token;
+    _spotifyTokenExpiry = now + (j.expires_in||3600)*1000;
+    return _spotifyToken;
+  }
+
+  window.searchArtist = async function() {
+    const q = document.getElementById('search').value;
+    if(!q) return;
+    const results = document.getElementById('results');
+    results.innerHTML = '<div class="card">Searching...</div>';
+    try {
+      const token = await getSpotifyToken();
+      const resp = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=artist&limit=8`, { headers: { Authorization:'Bearer '+token }});
+      const json = await resp.json();
+      const items = json.artists?.items || [];
+      if(!items.length){ results.innerHTML='<div class="card">No artists found.</div>'; return; }
+      results.innerHTML = '';
+      items.forEach(artist => {
+        const img = artist.images?.[0]?.url || '';
+        const idSafe = artist.id;
+        const card = document.createElement('div');
+        card.className = 'artist-card';
+        card.innerHTML = `
+          ${img? `<img src="${img}" alt="${artist.name}">` : ''}
+          <h3>${artist.name}</h3>
+          <p>Followers: ${Number(artist.followers?.total||0).toLocaleString()}</p>
+          <p class="muted">Genres: ${(artist.genres||[]).slice(0,3).join(',')||'N/A'}</p>
+          <input type="number" id="amount-${idSafe}" placeholder="Credits to invest" min="1"/>
+          <button>Invest</button>
+        `;
+        card.querySelector('button').addEventListener('click', ()=>{
+          const amt = parseInt(document.getElementById(`amount-${idSafe}`).value,10);
+          if(!amt||amt<=0) return alert('Enter a valid amount');
+          if(balance<amt) return alert('Not enough balance');
+          balance -= amt;
+          investments[artist.name] = (investments[artist.name]||0)+amt;
+          displayPortfolio();
+        });
+        results.appendChild(card);
+      });
+    } catch(err){ console.error(err); results.innerHTML='<div class="card">Error fetching results</div>'; }
+  };
 });
