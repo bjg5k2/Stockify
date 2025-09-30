@@ -1,85 +1,148 @@
+/* General Layout */
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f4fff4;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 0;
+  background: #f4f7fb;
+  color: #333;
 }
 
-header {
-  background-color: #66cc66;
-  padding: 20px;
-  text-align: center;
-  border-bottom-left-radius: 15px;
-  border-bottom-right-radius: 15px;
+h1, h2 {
+  margin: 0 0 10px;
 }
 
-header h1 {
-  margin: 0;
-  color: white;
-}
-
-nav {
-  margin-top: 10px;
-}
-
-nav button {
-  margin: 0 10px;
-  padding: 10px 20px;
-  border-radius: 10px;
-  border: none;
-  background-color: #99ff99;
-  cursor: pointer;
+/* Branding */
+.brand {
+  color: #4a90e2;
   font-weight: bold;
 }
 
-nav button:hover {
-  background-color: #88ee88;
+.tagline {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
 }
 
-main {
-  padding: 20px;
+/* Authentication Page */
+.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #4a90e2, #50e3c2);
 }
 
-.page {
-  max-width: 800px;
-  margin: 0 auto;
+.auth-card {
+  background: #fff;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  text-align: center;
+  width: 320px;
 }
 
-input {
-  margin: 5px 0;
-  padding: 10px;
-  width: 90%;
-  max-width: 400px;
-  border-radius: 5px;
+.auth-card input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
   border: 1px solid #ccc;
 }
 
-button.invest-btn {
-  margin-top: 5px;
-  padding: 5px 10px;
-  background-color: #66cc66;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+.auth-buttons {
+  display: flex;
+  justify-content: space-between;
 }
 
-button.invest-btn:hover {
-  background-color: #55bb55;
+.auth-buttons button {
+  flex: 1;
+  margin: 5px;
+}
+
+/* Buttons */
+button {
+  background: #4a90e2;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+button:hover {
+  background: #357ABD;
+}
+
+/* Header */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.logout {
+  background: #e94e4e;
+}
+
+.logout:hover {
+  background: #c43b3b;
+}
+
+/* Sections */
+section {
+  padding: 20px;
+}
+
+/* Cards & Grid */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
 }
 
 .artist-card {
-  display: inline-block;
-  width: 180px;
-  margin: 10px;
-  padding: 10px;
-  border: 1px solid #99ff99;
-  border-radius: 10px;
-  background-color: white;
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   text-align: center;
 }
+
 .artist-card img {
-  width: 150px;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 10px;
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.artist-card h3 {
+  margin: 5px 0;
+}
+
+/* Search bar */
+.search-bar {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px 0 0 8px;
+  border: 1px solid #ccc;
+}
+
+.search-bar button {
+  border-radius: 0 8px 8px 0;
 }
