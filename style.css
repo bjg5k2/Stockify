@@ -1,80 +1,206 @@
+/* Stockify — green theme, pleasant UI */
+
+:root{
+  --green-700: #0d6b2f;
+  --green-500: #14a44d;
+  --green-300: #99ff99;
+  --bg: #f4fff4;
+  --card-bg: #ffffff;
+  --muted: #667070;
+}
+
+* { box-sizing: border-box; }
 body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #f5fff5;
-  color: #222;
+  background: var(--bg);
+  color: #122;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
 }
 
-h1, h2, h3 {
-  color: #0a6d2c;
-}
-
-nav {
+/* Header / Navbar */
+header {
+  background: var(--green-700);
+  color: white;
+  padding: 22px 16px;
   display: flex;
+  align-items: center;
   justify-content: center;
-  background: #0a6d2c;
-  padding: 10px;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 3px 12px rgba(10,10,10,0.08);
 }
 
-nav button {
-  background: #14a44d;
+header h1 {
+  margin: 0;
+  font-size: 28px;
+  letter-spacing: 0.6px;
+}
+
+nav#navbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 1000px;
+}
+
+nav#navbar button {
+  background: var(--green-500);
+  color: #fff;
   border: none;
-  color: white;
-  padding: 10px 20px;
-  margin: 0 10px;
-  border-radius: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s;
+  box-shadow: 0 4px 8px rgba(16, 88, 34, 0.12);
 }
 
-nav button:hover {
-  background: #0d8439;
+nav#navbar button:hover { background: var(--green-700); }
+
+/* Generic page layout */
+.container {
+  max-width: 1100px;
+  margin: 24px auto;
+  padding: 0 18px;
 }
 
-.page {
-  padding: 20px;
-  display: none;
-}
+/* Page toggling */
+.hidden { display: none !important; }
+.page { display: none; }
+.page.active { display: block; }
 
-.page.active,
-.page:not(.hidden) {
-  display: block;
-}
-
+/* Auth card */
 #auth-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 120px);
+  padding: 20px;
+}
+
+.auth-card {
+  width: 360px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.99));
+  padding: 28px;
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(8, 75, 30, 0.08);
   text-align: center;
-  margin-top: 100px;
 }
 
-#auth-section input {
-  display: block;
-  margin: 10px auto;
+.auth-card h2 { margin: 0 0 8px; color: var(--green-700); }
+.auth-card p { margin: 0 0 16px; color: var(--muted); }
+.auth-card input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: 1px solid #e6e6e6;
+  font-size: 14px;
+}
+.auth-card .auth-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 8px;
+}
+.auth-card button {
+  flex: 1;
   padding: 10px;
-  width: 250px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
-#auth-section button {
-  margin: 5px;
-  padding: 10px 20px;
-  background: #14a44d;
+  border-radius: 8px;
   border: none;
-  border-radius: 6px;
+  background: var(--green-500);
   color: white;
   cursor: pointer;
-  transition: background 0.3s;
+}
+.auth-card button.secondary {
+  background: #e6f7ec;
+  color: var(--green-700);
+  border: 1px solid rgba(20,164,77,0.08);
 }
 
-#auth-section button:hover {
-  background: #0d8439;
+/* Content sections */
+.section {
+  background: transparent;
+  padding: 18px 0;
 }
 
-#results div,
-#investments div {
-  border: 1px solid #ccc;
+/* Cards & grid */
+.card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 6px 20px rgba(12, 60, 20, 0.05);
+  margin-bottom: 14px;
+}
+
+.grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+/* Artist card (search results) */
+.artist-card {
+  background: var(--card-bg);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(10, 60, 20, 0.04);
+}
+.artist-card img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
   border-radius: 8px;
-  padding: 10px;
-  margin: 10px 0;
-  background: white;
+  margin-bottom: 8px;
+}
+.artist-card h3 {
+  margin: 6px 0 4px;
+  font-size: 16px;
+}
+.artist-card p {
+  margin: 4px 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.artist-card input[type="number"] {
+  width: 100%;
+  padding: 8px;
+  margin-top: 8px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+.artist-card button {
+  margin-top: 8px;
+  background: var(--green-700);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Portfolio list */
+#balance {
+  font-weight: 700;
+  color: var(--green-700);
+  margin-bottom: 12px;
+}
+.investment-item {
+  display:flex;
+  justify-content:space-between;
+  padding:10px;
+  border-radius:8px;
+  background:white;
+  margin-bottom:8px;
+  align-items:center;
+}
+
+/* Small screens */
+@media (max-width:600px){
+  nav#navbar { flex-wrap: wrap; gap:8px; padding:10px; }
+  .auth-card { width: 92%; padding:22px; }
 }
