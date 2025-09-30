@@ -1,56 +1,75 @@
 body {
   font-family: Arial, sans-serif;
-  background: #f0fff0;
-  color: #333;
+  background: #f0fff4;
   margin: 0;
   padding: 0;
 }
 
-header {
-  background: #b0e0a0;
-  padding: 1em;
+nav {
+  background: #a3e4d7;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
+  justify-content: center;
+  padding: 1rem;
+  gap: 1rem;
+  border-bottom: 2px solid #76c7b7;
 }
 
 nav button {
-  margin-left: 10px;
-  padding: 0.5em 1em;
-  border-radius: 10px;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
   border: none;
-  background: #90d080;
+  background: #76c7b7;
+  color: white;
   cursor: pointer;
-  color: #fff;
+  font-weight: bold;
+  transition: background 0.3s;
 }
 
 nav button:hover {
-  background: #70b060;
+  background: #52a78f;
+}
+
+main {
+  padding: 2rem;
 }
 
 .page {
-  padding: 1em;
+  max-width: 900px;
+  margin: auto;
+}
+
+#artist-results {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 .artist-card {
-  display: inline-block;
-  border: 1px solid #90d080;
-  border-radius: 15px;
-  padding: 10px;
-  margin: 10px;
-  background: #e0ffe0;
+  background: #e0f7eb;
+  border-radius: 16px;
+  padding: 1rem;
+  width: 200px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
   text-align: center;
-  width: 150px;
 }
 
 .artist-card img {
-  width: 100px;
-  height: 100px;
-  border-radius: 10px;
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 0.5rem;
 }
 
-#portfolio-list div {
-  margin-bottom: 10px;
+button.invest-btn {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 12px;
+  background: #52a78f;
+  color: white;
+  cursor: pointer;
+}
+
+button.invest-btn:hover {
+  background: #3d826b;
 }
