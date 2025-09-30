@@ -1,4 +1,4 @@
-// Firebase config (yours already provided earlier)
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyBF5gzPThKD1ga_zpvtdBpiQFsexbEpZyY",
   authDomain: "stockify-75531.firebaseapp.com",
@@ -24,7 +24,6 @@ async function signUp() {
     const userCredential = await auth.createUserWithEmailAndPassword(email, password);
     currentUser = userCredential.user;
 
-    // Create portfolio with default balance
     await db.collection("users").doc(currentUser.uid).set({
       balance: 10000,
       investments: {}
@@ -95,25 +94,43 @@ function displayPortfolio(investments) {
   }
 }
 
-// ===== TRADE (Search + Invest) =====
+// ===== SPOTIFY SEARCH =====
+const clientId = "b0450273fe7d41a08cc3ea93a2e733ae";
+const clientSecret = "5b22a59a771b4f8885f887958bfddeb2";
+
+async function getSpotifyToken() {
+  const response = await fetch("https://accounts.spotify.com/api/token", {
+    method: "POST",
+    headers: {
+      Authorization: "Basic " + btoa(clientId + ":" + clientSecret),
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: "grant_type=client_credentials"
+  });
+  const data = await response.json();
+  return data.access_token;
+}
+
 async function searchArtist() {
   const query = document.getElementById("search").value;
   if (!query) return;
 
-  // Demo mock search (replace with Spotify later)
+  const token = await getSpotifyToken();
+  const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=artist&limit=5`, {
+    headers: { Authorization: "Bearer " + token }
+  });
+  const data = await response.json();
+
   const resultsDiv = document.getElementById("results");
   resultsDiv.innerHTML = "";
 
-  const demoArtists = [
-    { name: "Post Malone", followers: "35M" },
-    { name: "Drake", followers: "80M" }
-  ];
-
-  demoArtists.forEach(artist => {
+  data.artists.items.forEach(artist => {
+    const img = artist.images.length > 0 ? artist.images[0].url : "";
     const card = document.createElement("div");
     card.innerHTML = `
       <h3>${artist.name}</h3>
-      <p>Followers: ${artist.followers}</p>
+      ${img ? `<img src="${img}" alt="${artist.name}" width="100"/>` : ""}
+      <p>Followers: ${artist.followers.total.toLocaleString()}</p>
       <input type="number" id="amount-${artist.name}" placeholder="Amount"/>
       <button onclick="invest('${artist.name}')">Invest</button>
     `;
@@ -121,6 +138,7 @@ async function searchArtist() {
   });
 }
 
+// ===== INVEST =====
 async function invest(artist) {
   const amountInput = document.getElementById(`amount-${artist}`).value;
   const amount = parseInt(amountInput);
