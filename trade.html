@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trade - Music Stock Game</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav>
+    <div class="nav-brand">🎵 Music Stock Game</div>
+    <div class="nav-buttons">
+      <a href="index.html"><button>Home</button></a>
+      <a href="portfolio.html"><button>My Portfolio</button></a>
+      <button disabled>Trade</button>
+    </div>
+  </nav>
+
+  <main>
+    <section>
+      <h2>Trade / Search Artists</h2>
+      <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Search for an artist...">
+        <button onclick="searchArtist()">Search</button>
+      </div>
+      <div id="artist-results"></div>
+    </section>
+  </main>
+
+  <script src="trade.js"></script>
+</body>
+</html>
