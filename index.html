@@ -2,376 +2,229 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Music Stock Market</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music Stocks</title>
   <style>
     body {
-      font-family: 'Inter', sans-serif;
-      background-color: #e8f5e9;
-      color: #333;
+      font-family: Arial, sans-serif;
+      background: #f0fdf4;
+      color: #1f2937;
       margin: 0;
       padding: 0;
     }
 
     header {
-      background-color: #a5d6a7;
-      color: #fff;
-      padding: 2rem;
+      background: #10b981;
+      color: white;
+      padding: 1rem 2rem;
       text-align: center;
       border-bottom-left-radius: 20px;
       border-bottom-right-radius: 20px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
     }
 
     main {
-      max-width: 900px;
-      margin: 2rem auto;
-      padding: 1rem;
-      background-color: #fff;
-      border-radius: 20px;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+      padding: 2rem;
     }
 
-    h1, h2 {
+    .portfolio, .search {
+      background: white;
+      border-radius: 15px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .portfolio h2, .search h2 {
       margin-top: 0;
+      color: #065f46;
     }
 
-    .credits {
-      font-size: 1.2rem;
-      margin-bottom: 1rem;
-    }
-
-    .artist-section {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      padding: 0.5rem 1rem;
-      background-color: #f1f8f1;
-      border-radius: 15px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-
-    .artist-section p {
-      margin: 0;
-      font-weight: 600;
-    }
-
-    .artist-section button {
-      margin-left: 0.5rem;
-      padding: 0.4rem 0.8rem;
+    button {
+      background: #10b981;
+      color: white;
       border: none;
-      border-radius: 12px;
-      background-color: #81c784;
-      color: #fff;
-      font-weight: 600;
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
       cursor: pointer;
-      transition: background 0.2s;
+      font-size: 1rem;
     }
 
-    .artist-section button:hover {
-      background-color: #66bb6a;
+    button:hover {
+      background: #059669;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-    }
-
-    th, td {
-      padding: 0.8rem;
-      text-align: center;
-      border-bottom: 1px solid #ddd;
-    }
-
-    th {
-      background-color: #a5d6a7;
-      color: #fff;
-      border-radius: 10px 10px 0 0;
-    }
-
-    tr:nth-child(even) {
-      background-color: #f6f9f6;
-    }
-
-    .up {
-      color: green;
-      font-weight: bold;
-    }
-
-    .down {
-      color: red;
-      font-weight: bold;
-    }
-
-    #chartContainer {
-      margin-top: 2rem;
-      padding: 1rem;
-      background-color: #f1f8f1;
-      border-radius: 15px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-
-    #searchResults div {
-      margin-bottom: 1rem;
+    input {
       padding: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 12px;
-      background-color: #f1f8f1;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      width: calc(100% - 120px);
+      margin-right: 10px;
+    }
+
+    .artist-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #ecfdf5;
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 15px;
+    }
+
+    .artist-info {
       display: flex;
       align-items: center;
     }
 
-    #searchResults img {
+    .artist-card img {
+      width: 64px;
+      height: 64px;
       border-radius: 50%;
       margin-right: 1rem;
     }
 
-    #artistSearch, #artistSearchButton {
-      margin-top: 1rem;
+    #portfolioList li {
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      background: #d1fae5;
+      border-radius: 10px;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>🎵 Music Stock Market</h1>
-    <p>Invest in your favorite artists and watch your portfolio grow!</p>
+    <h1>🎵 Music Stocks</h1>
+    <p>Invest credits in your favorite artists</p>
   </header>
 
   <main>
-    <p class="credits">Your credits: <span id="credits">1000</span></p>
+    <!-- Portfolio Section -->
+    <section class="portfolio">
+      <h2>My Portfolio</h2>
+      <ul id="portfolioList">
+        <li>You don’t have any investments yet.</li>
+      </ul>
+    </section>
 
-    <h2>Artists</h2>
-
-    <div class="artist-section">
-      <p>Ariana Grande: <span id="price-ariana">100</span> credits per share</p>
-      <div>
-        <button onclick="buyArtist('Ariana Grande', 100)">Buy 100</button>
-        <button onclick="sellArtist('Ariana Grande', 100)">Sell 100</button>
-      </div>
-    </div>
-
-    <div class="artist-section">
-      <p>Drake: <span id="price-drake">100</span> credits per share</p>
-      <div>
-        <button onclick="buyArtist('Drake', 100)">Buy 100</button>
-        <button onclick="sellArtist('Drake', 100)">Sell 100</button>
-      </div>
-    </div>
-
-    <h2>Search for an Artist</h2>
-    <input type="text" id="artistSearch" placeholder="Type artist name..." style="padding:0.5rem; border-radius:12px; border:1px solid #ccc;">
-    <button id="artistSearchButton" onclick="searchArtist()" style="padding:0.5rem 1rem; border-radius:12px; background-color:#81c784; color:white; border:none; cursor:pointer;">Search</button>
-    <div id="searchResults"></div>
-
-    <h2>Your Portfolio</h2>
-    <table id="portfolioTable">
-      <thead>
-        <tr>
-          <th>Artist</th>
-          <th>Invested</th>
-          <th>Current Value</th>
-        </tr>
-      </thead>
-      <tbody>
-      </tbody>
-    </table>
-
-    <div id="chartContainer">
-      <canvas id="portfolioChart" width="800" height="400"></canvas>
-    </div>
+    <!-- Search Section -->
+    <section class="search">
+      <h2>Search for Artists</h2>
+      <input type="text" id="searchInput" placeholder="Search Spotify for an artist...">
+      <button onclick="searchArtist()">Search</button>
+      <div id="searchResults"></div>
+    </section>
   </main>
 
   <script>
-    // ----------- User Data -----------
-    let credits = 1000;
-    let portfolio = { "Ariana Grande": 0, "Drake": 0 };
-    let prices = { "Ariana Grande": 100, "Drake": 100 };
-    let portfolioHistory = [];
+    // 🔐 Your Spotify Client ID and Secret (safe only if repo is private!)
+    const clientId = "b0450273fe7d41a08cc3ea93a2e733ae";
+    const clientSecret = "5b22a59a771b4f8885f887958bfddeb2";
 
-    // ----------- Spotify Setup -----------
-    const clientId = b0450273fe7d41a08cc3ea93a2e733ae;     // 🔑 replace with your real Client ID
-    const clientSecret = 5b22a59a771b4f8885f887958bfddeb2; // 🔑 replace with your real Client Secret
-    let accessToken = '';
+    let accessToken = "";
+    let portfolio = [];
 
-    const artists = {
-      "Ariana Grande": "0C8ZW7JHO19nR1t6Y27Bhw",
-      "Drake": "3TVXtAsR1Inumwj472S9r4"
-    };
+    // Step 1: Get Spotify Access Token
+    async function getAccessToken() {
+      const result = await fetch("https://accounts.spotify.com/api/token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Authorization": "Basic " + btoa(clientId + ":" + clientSecret),
+        },
+        body: "grant_type=client_credentials",
+      });
 
-    // ----------- Fetch Access Token -----------
-    async function getToken() {
-      const authString = btoa(`${clientId}:${clientSecret}`);
-      try {
-        const res = await fetch('https://accounts.spotify.com/api/token', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Basic ${authString}`,
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          body: 'grant_type=client_credentials'
-        });
-        const data = await res.json();
-        accessToken = data.access_token;
-        console.log('Access token fetched:', accessToken);
-      } catch (err) {
-        console.error('Error fetching token:', err);
-      }
+      const data = await result.json();
+      accessToken = data.access_token;
+      console.log("✅ Access Token:", accessToken);
     }
 
-    getToken();
-    setInterval(getToken, 55 * 60 * 1000);
-
-    // ----------- Fetch Artist Followers -----------
-    async function fetchFollowers(artistId) {
-      try {
-        const res = await fetch(`https://api.spotify.com/v1/artists/${artistId}`, {
-          headers: { 'Authorization': `Bearer ${accessToken}` }
-        });
-        const data = await res.json();
-        return data.followers.total;
-      } catch (err) {
-        console.error("Error fetching followers:", err);
-        return null;
-      }
-    }
-
-    async function updateStockPrices() {
-      for (let name in artists) {
-        const followers = await fetchFollowers(artists[name]);
-        if (followers) prices[name] = followers / 1000000;
-      }
-      updateDisplay();
-      updatePortfolioHistory();
-    }
-
-    // ----------- Buy/Sell Functions -----------
-    function buyArtist(name, amount) {
-      if (credits >= amount) {
-        credits -= amount;
-        if (!portfolio[name]) portfolio[name] = 0;
-        portfolio[name] += amount;
-        updateDisplay();
-        updatePortfolioHistory();
-      } else alert("Not enough credits!");
-    }
-
-    function sellArtist(name, amount) {
-      if (portfolio[name] >= amount) {
-        credits += amount;
-        portfolio[name] -= amount;
-        updateDisplay();
-        updatePortfolioHistory();
-      } else alert("You don't have that much invested!");
-    }
-
-    // ----------- Display Function -----------
-    function updateDisplay() {
-      document.getElementById('credits').innerText = credits;
-
-      const tbody = document.getElementById('portfolioTable').querySelector('tbody');
-      tbody.innerHTML = '';
-
-      for (let artist in portfolio) {
-        const invested = portfolio[artist];
-        const value = invested * (prices[artist] / 100);
-
-        const row = document.createElement('tr');
-
-        const cellArtist = document.createElement('td');
-        cellArtist.innerText = artist;
-        row.appendChild(cellArtist);
-
-        const cellInvested = document.createElement('td');
-        cellInvested.innerText = invested;
-        row.appendChild(cellInvested);
-
-        const cellValue = document.createElement('td');
-        cellValue.innerText = value.toFixed(2);
-        if (value > invested) cellValue.classList.add('up');
-        else if (value < invested) cellValue.classList.add('down');
-        row.appendChild(cellValue);
-
-        tbody.appendChild(row);
-
-        const priceSpan = document.getElementById(`price-${artist.toLowerCase().replace(/\s/g,'')}`);
-        if (priceSpan) priceSpan.innerText = prices[artist].toFixed(2);
-      }
-    }
-
-    // ----------- Portfolio Chart -----------
-    const ctx = document.getElementById('portfolioChart').getContext('2d');
-    const portfolioChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: [],
-        datasets: [{
-          label: 'Portfolio Value',
-          data: [],
-          borderColor: '#66bb6a',
-          backgroundColor: 'rgba(129,199,132,0.2)',
-          tension: 0.2,
-          fill: true
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: { y: { beginAtZero: true } }
-      }
-    });
-
-    function updatePortfolioHistory() {
-      const totalValue = Object.keys(portfolio).reduce((acc, artist) => {
-        const invested = portfolio[artist];
-        const value = invested * (prices[artist] / 100);
-        return acc + value;
-      }, 0);
-
-      const now = new Date().toLocaleTimeString();
-      portfolioHistory.push({ time: now, value: totalValue });
-
-      portfolioChart.data.labels.push(now);
-      portfolioChart.data.datasets[0].data.push(totalValue);
-      portfolioChart.update();
-    }
-
-    // ----------- Artist Search -----------
+    // Step 2: Search Artist
     async function searchArtist() {
-      const query = document.getElementById('artistSearch').value;
+      const query = document.getElementById("searchInput").value;
       if (!query) return;
 
-      try {
-        const res = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=artist&limit=3`, {
-          headers: { 'Authorization': `Bearer ${accessToken}` }
-        });
-        const data = await res.json();
-
-        const resultsDiv = document.getElementById('searchResults');
-        resultsDiv.innerHTML = '';
-
-        data.artists.items.forEach(artist => {
-          const artistDiv = document.createElement('div');
-          const img = artist.images.length ? artist.images[0].url : '';
-          artistDiv.innerHTML = `
-            <img src="${img}" alt="${artist.name}" width="50" height="50">
-            <div>
-              <strong>${artist.name}</strong><br>
-              Followers: ${artist.followers.total.toLocaleString()}
-            </div>
-          `;
-          resultsDiv.appendChild(artistDiv);
-        });
-      } catch (err) {
-        console.error('Search error:', err);
+      if (!accessToken) {
+        await getAccessToken();
       }
+
+      const result = await fetch(
+        `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=artist`,
+        {
+          method: "GET",
+          headers: { Authorization: "Bearer " + accessToken },
+        }
+      );
+
+      const data = await result.json();
+      displayResults(data.artists.items);
     }
 
-    // ----------- Run initial setup -----------
-    updateDisplay();
-    setInterval(updateStockPrices, 30 * 1000);
+    // Step 3: Display Results
+    function displayResults(artists) {
+      const container = document.getElementById("searchResults");
+      container.innerHTML = "";
+
+      if (artists.length === 0) {
+        container.innerHTML = "<p>No results found.</p>";
+        return;
+      }
+
+      artists.forEach((artist) => {
+        const card = document.createElement("div");
+        card.className = "artist-card";
+
+        const info = document.createElement("div");
+        info.className = "artist-info";
+
+        const img = document.createElement("img");
+        img.src = artist.images[0] ? artist.images[0].url : "https://via.placeholder.com/64";
+        img.alt = artist.name;
+
+        const text = document.createElement("div");
+        text.innerHTML = `<strong>${artist.name}</strong><br>
+                          Followers: ${artist.followers.total.toLocaleString()}`;
+
+        info.appendChild(img);
+        info.appendChild(text);
+
+        const investBtn = document.createElement("button");
+        investBtn.innerText = "Invest 100 credits";
+        investBtn.onclick = () => investInArtist(artist);
+
+        card.appendChild(info);
+        card.appendChild(investBtn);
+
+        container.appendChild(card);
+      });
+    }
+
+    // Step 4: Invest in Artist
+    function investInArtist(artist) {
+      portfolio.push({
+        name: artist.name,
+        followers: artist.followers.total,
+        credits: 100,
+      });
+      updatePortfolio();
+    }
+
+    // Step 5: Update Portfolio Display
+    function updatePortfolio() {
+      const list = document.getElementById("portfolioList");
+      list.innerHTML = "";
+
+      portfolio.forEach((item) => {
+        const li = document.createElement("li");
+        li.innerText = `${item.credits} credits in ${item.name} (Followers: ${item.followers.toLocaleString()})`;
+        list.appendChild(li);
+      });
+    }
   </script>
 </body>
 </html>
-
