@@ -151,16 +151,28 @@ async function invest(artistId, artistName) {
   alert(`Invested ${amount} credits in ${artistName}!`);
 }
 
-// -------------------- Spotify Search Function --------------------
+// -------------------- Page Navigation --------------------
+function showPage(pageId) {
+  const pages = ["home-page", "portfolio-page", "trade-page"];
+  pages.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = id === pageId ? "block" : "none";
+  });
+}
+
+// -------------------- Spotify Search Function (Mock) --------------------
 async function searchArtist() {
   const query = document.getElementById("search-input").value;
   if (!query) return;
-  // Replace with actual Spotify API fetch later
+  const resultsDiv = document.getElementById("artist-results");
+  resultsDiv.innerHTML = "<p>Loading...</p>";
+
   const mockResults = [
     { id: "1", name: "Ariana Grande", image: "https://via.placeholder.com/150" },
-    { id: "2", name: "Drake", image: "https://via.placeholder.com/150" }
+    { id: "2", name: "Drake", image: "https://via.placeholder.com/150" },
+    { id: "3", name: "The Weeknd", image: "https://via.placeholder.com/150" }
   ];
-  const resultsDiv = document.getElementById("artist-results");
+
   resultsDiv.innerHTML = "";
   mockResults.forEach(artist => {
     if (!artist.name.toLowerCase().includes(query.toLowerCase())) return;
@@ -174,5 +186,5 @@ async function searchArtist() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Auth state listener handles loading user data
+  showPage("home-page"); // default page
 });
