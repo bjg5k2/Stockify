@@ -2,24 +2,51 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Music Stocks - Home</title>
   <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBF5gzPThKD1ga_zpvtdBpiQFsexbEpZyY",
+      authDomain: "stockify-75531.firebaseapp.com",
+      projectId: "stockify-75531",
+      storageBucket: "stockify-75531.firebasestorage.app",
+      messagingSenderId: "831334536771",
+      appId: "1:831334536771:web:b142abcead4df128c826f6"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+  </script>
 </head>
 <body>
-  <header>
-    <h1>🎵 Music Stocks</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="portfolio.html">Portfolio</a>
-      <a href="records.html">Records</a>
-    </nav>
-  </header>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="portfolio.html">My Portfolio</a>
+    <a href="records.html">Records</a>
+  </nav>
 
-  <main>
-    <h2>Welcome!</h2>
-    <p>Invest credits in your favorite artists and track their performance over time.</p>
-    <p>Use the navigation above to explore.</p>
-  </main>
+  <h1>Welcome to Music Stocks!</h1>
+  <div id="auth-section">
+    <h2>Sign Up / Login</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="signUp()">Sign Up</button>
+    <button onclick="logIn()">Log In</button>
+    <button onclick="logOut()">Log Out</button>
+  </div>
+
+  <div id="user-section" style="display:none;">
+    <p>Credits: <span id="credits">0</span></p>
+    <input type="text" id="artistName" placeholder="Artist Name">
+    <input type="number" id="investAmount" placeholder="Credits to invest">
+    <button onclick="invest()">Invest</button>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
