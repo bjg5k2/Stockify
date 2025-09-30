@@ -8,19 +8,17 @@
 </head>
 <body>
 
-<!-- Navbar -->
 <header>
   <h1>Stockify</h1>
   <nav id="navbar">
-    <button onclick="showPage('home')">Home</button>
-    <button onclick="showPage('portfolio')">Portfolio</button>
-    <button onclick="showPage('trade')">Trade</button>
+    <button data-page="home">Home</button>
+    <button data-page="portfolio">Portfolio</button>
+    <button data-page="trade">Trade</button>
   </nav>
 </header>
 
 <div class="container">
 
-  <!-- Home -->
   <div id="home" class="page active section">
     <div class="card">
       <h2>Welcome to Stockify</h2>
@@ -28,18 +26,16 @@
     </div>
   </div>
 
-  <!-- Portfolio -->
-  <div id="portfolio" class="page hidden section">
+  <div id="portfolio" class="page section">
     <h2>Your Portfolio</h2>
     <div id="balance">Balance: 10000 credits</div>
     <div id="investments"></div>
   </div>
 
-  <!-- Trade -->
-  <div id="trade" class="page hidden section">
+  <div id="trade" class="page section">
     <h2>Trade Artists</h2>
     <input type="text" id="search" placeholder="Search for an artist">
-    <button onclick="searchArtist()">Search</button>
+    <button id="search-btn">Search</button>
     <div id="results" class="grid"></div>
   </div>
 
