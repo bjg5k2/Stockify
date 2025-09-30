@@ -1,148 +1,80 @@
-/* General Layout */
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
-  padding: 0;
-  background: #f4f7fb;
-  color: #333;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f5fff5;
+  color: #222;
 }
 
-h1, h2 {
-  margin: 0 0 10px;
+h1, h2, h3 {
+  color: #0a6d2c;
 }
 
-/* Branding */
-.brand {
-  color: #4a90e2;
-  font-weight: bold;
-}
-
-.tagline {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 20px;
-}
-
-/* Authentication Page */
-.auth-page {
+nav {
   display: flex;
-  align-items: center;
   justify-content: center;
-  height: 100vh;
-  background: linear-gradient(135deg, #4a90e2, #50e3c2);
+  background: #0a6d2c;
+  padding: 10px;
 }
 
-.auth-card {
-  background: #fff;
-  padding: 30px 40px;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-  text-align: center;
-  width: 320px;
-}
-
-.auth-card input {
-  width: 100%;
-  padding: 12px;
-  margin: 10px 0;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-
-.auth-buttons {
-  display: flex;
-  justify-content: space-between;
-}
-
-.auth-buttons button {
-  flex: 1;
-  margin: 5px;
-}
-
-/* Buttons */
-button {
-  background: #4a90e2;
-  color: white;
+nav button {
+  background: #14a44d;
   border: none;
-  padding: 10px 14px;
+  color: white;
+  padding: 10px 20px;
+  margin: 0 10px;
   border-radius: 8px;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background 0.3s;
 }
 
-button:hover {
-  background: #357ABD;
+nav button:hover {
+  background: #0d8439;
 }
 
-/* Header */
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.page {
   padding: 20px;
-  background: #fff;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  display: none;
 }
 
-.logout {
-  background: #e94e4e;
+.page.active,
+.page:not(.hidden) {
+  display: block;
 }
 
-.logout:hover {
-  background: #c43b3b;
-}
-
-/* Sections */
-section {
-  padding: 20px;
-}
-
-/* Cards & Grid */
-.card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 20px;
-}
-
-.artist-card {
-  background: #fff;
-  padding: 15px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+#auth-section {
   text-align: center;
+  margin-top: 100px;
 }
 
-.artist-card img {
-  width: 100%;
-  border-radius: 8px;
-  margin-bottom: 10px;
-}
-
-.artist-card h3 {
-  margin: 5px 0;
-}
-
-/* Search bar */
-.search-bar {
-  display: flex;
-  margin-bottom: 20px;
-}
-
-.search-bar input {
-  flex: 1;
-  padding: 12px;
-  border-radius: 8px 0 0 8px;
+#auth-section input {
+  display: block;
+  margin: 10px auto;
+  padding: 10px;
+  width: 250px;
+  border-radius: 6px;
   border: 1px solid #ccc;
 }
 
-.search-bar button {
-  border-radius: 0 8px 8px 0;
+#auth-section button {
+  margin: 5px;
+  padding: 10px 20px;
+  background: #14a44d;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#auth-section button:hover {
+  background: #0d8439;
+}
+
+#results div,
+#investments div {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 10px 0;
+  background: white;
 }
