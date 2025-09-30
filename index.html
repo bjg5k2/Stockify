@@ -8,18 +8,34 @@
 </head>
 <body>
 
-<header>
+<!-- Auth Section -->
+<div id="auth-section" class="page active">
+  <div class="auth-card">
+    <h2>Welcome to Stockify</h2>
+    <p>Sign up or log in to manage your music investments</p>
+    <input type="email" id="email" placeholder="Email" required />
+    <input type="password" id="password" placeholder="Password" required />
+    <div class="auth-actions">
+      <button id="signup-btn">Sign Up</button>
+      <button class="secondary" id="login-btn">Log In</button>
+    </div>
+  </div>
+</div>
+
+<!-- Navbar -->
+<header id="main-header" class="hidden">
   <h1>Stockify</h1>
   <nav id="navbar">
     <button data-page="home">Home</button>
     <button data-page="portfolio">Portfolio</button>
     <button data-page="trade">Trade</button>
+    <button id="logout-btn">Log Out</button>
   </nav>
 </header>
 
 <div class="container">
 
-  <div id="home" class="page active section">
+  <div id="home" class="page section">
     <div class="card">
       <h2>Welcome to Stockify</h2>
       <p>Invest your credits in your favorite artists and build your portfolio!</p>
@@ -40,6 +56,11 @@
   </div>
 
 </div>
+
+<!-- Firebase Scripts -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script src="main.js"></script>
 </body>
