@@ -1,114 +1,93 @@
-// 🔐 Your Spotify Client ID and Secret (keep repo private!)
-const clientId = "b0450273fe7d41a08cc3ea93a2e733ae";
-const clientSecret = "5b22a59a771b4f8885f887958bfddeb2";
+let currentUser = null;
 
-let accessToken = "";
-let portfolio = JSON.parse(localStorage.getItem("portfolio")) || [];
+// Sign Up
+async function signUp() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  try {
+    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+    const user = userCredential.user;
 
-// --- Get Access Token ---
-async function getAccessToken() {
-  const result = await fetch("https://accounts.spotify.com/api/token", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      "Authorization": "Basic " + btoa(clientId + ":" + clientSecret),
-    },
-    body: "grant_type=client_credentials",
-  });
-  const data = await result.json();
-  accessToken = data.access_token;
+    await db.collection("users").doc(user.uid).set({
+      credits: 10000,
+      portfolio: []
+    });
+
+    alert("Account created! You have 10,000 credits.");
+    logIn();
+  } catch (err) {
+    alert(err.message);
+  }
 }
 
-// --- Search Artist ---
-async function searchArtist() {
-  const query = document.getElementById("searchInput").value;
-  if (!query) return;
-  if (!accessToken) await getAccessToken();
+// Log In
+async function logIn() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  try {
+    const userCredential = await auth.signInWithEmailAndPassword(email, password);
+    const user = userCredential.user;
 
-  const result = await fetch(
-    `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=artist`,
-    { headers: { Authorization: "Bearer " + accessToken } }
-  );
-
-  const data = await result.json();
-  displayResults(data.artists.items);
+    const doc = await db.collection("users").doc(user.uid).get();
+    if (doc.exists) {
+      currentUser = { uid: user.uid, ...doc.data(), email, password };
+      document.getElementById("auth-section").style.display = "none";
+      document.getElementById("user-section").style.display = "block";
+      updateCreditsDisplay();
+    }
+  } catch (err) {
+    alert(err.message);
+  }
 }
 
-// --- Display Search Results ---
-function displayResults(artists) {
-  const container = document.getElementById("searchResults");
-  if (!container) return;
-  container.innerHTML = "";
+// Log Out
+function logOut() {
+  auth.signOut();
+  currentUser = null;
+  document.getElementById("auth-section").style.display = "block";
+  document.getElementById("user-section").style.display = "none";
+}
 
-  if (!artists || artists.length === 0) {
-    container.innerHTML = "<p>No results found.</p>";
+// Update Credits Display
+function updateCreditsDisplay() {
+  if (currentUser) {
+    document.getElementById("credits").innerText = currentUser.credits;
+  }
+}
+
+// Invest Credits
+async function invest() {
+  const artistName = document.getElementById("artistName").value;
+  let amount = parseInt(document.getElementById("investAmount").value);
+
+  if (!currentUser || !artistName || !amount) {
+    alert("Enter artist and amount.");
     return;
   }
 
-  artists.forEach((artist) => {
-    const card = document.createElement("div");
-    card.className = "artist-card";
+  const fee = Math.ceil(amount * 0.02);
+  const total = amount + fee;
 
-    const info = document.createElement("div");
-    info.className = "artist-info";
+  const userRef = db.collection("users").doc(currentUser.uid);
+  const userDoc = await userRef.get();
+  const userData = userDoc.data();
 
-    const img = document.createElement("img");
-    img.src = artist.images[0]?.url || "https://via.placeholder.com/64";
-    img.alt = artist.name;
+  if (userData.credits < total) {
+    alert("Not enough credits!");
+    return;
+  }
 
-    const text = document.createElement("div");
-    text.innerHTML = `<strong>${artist.name}</strong><br>
-                      Followers: ${artist.followers.total.toLocaleString()}`;
-
-    info.appendChild(img);
-    info.appendChild(text);
-
-    const investBtn = document.createElement("button");
-    investBtn.innerText = "Invest 100 credits";
-    investBtn.onclick = () => investInArtist(artist);
-
-    card.appendChild(info);
-    card.appendChild(investBtn);
-    container.appendChild(card);
-  });
-}
-
-// --- Invest ---
-function investInArtist(artist) {
-  const investment = {
-    name: artist.name,
-    followers: artist.followers.total,
-    credits: 100,
-    time: Date.now(),
+  const newInvestment = {
+    artistName,
+    creditsInvested: amount,
+    time: Date.now()
   };
-  portfolio.push(investment);
-  localStorage.setItem("portfolio", JSON.stringify(portfolio));
-  updatePortfolio();
-  updateRecords();
-}
 
-// --- Update Portfolio ---
-function updatePortfolio() {
-  const list = document.getElementById("portfolioList");
-  if (!list) return;
-
-  list.innerHTML = "";
-  portfolio.forEach((item) => {
-    const li = document.createElement("li");
-    li.innerText = `${item.credits} credits in ${item.name} (Followers: ${item.followers.toLocaleString()})`;
-    list.appendChild(li);
+  await userRef.update({
+    credits: userData.credits - total,
+    portfolio: firebase.firestore.FieldValue.arrayUnion(newInvestment)
   });
+
+  alert(`Invested ${amount} credits in ${artistName} (Fee: ${fee})`);
+  logIn(); // Refresh user data
 }
-
-// --- Update Records ---
-function updateRecords() {
-  const topCtx = document.getElementById("topCreditsChart")?.getContext("2d");
-  const recentCtx = document.getElementById("recentInvestmentsChart")?.getContext("2d");
-
-  if (!topCtx || !recentCtx) return;
-  if (portfolio.length === 0) return;
-
-  // Top credits
-  const grouped = {};
-  portfolio.forEach((p) => {
-    if (!grouped[p.name]) grouped[p.name] = 
