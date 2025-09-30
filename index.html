@@ -32,18 +32,22 @@
 
   <h1>Welcome to Music Stocks!</h1>
 
+  <!-- Sign Up / Login Section -->
   <div id="auth-section">
     <h2>Sign Up / Login</h2>
     <input type="email" id="email" placeholder="Email">
     <input type="password" id="password" placeholder="Password">
-    <button onclick="signUp()">Sign Up</button>
-    <button onclick="logIn()">Log In</button>
-    <button onclick="logOut()">Log Out</button>
+    <div>
+      <button onclick="signUp()">Sign Up</button>
+      <button onclick="logIn()">Log In</button>
+      <button onclick="logOut()">Log Out</button>
+    </div>
   </div>
 
+  <!-- User Section (shown after login) -->
   <div id="user-section" style="display:none;">
     <p>Credits: <span id="credits">0</span></p>
-    
+
     <h3>Invest in an Artist</h3>
     <input type="text" id="searchArtist" placeholder="Search artist">
     <button onclick="searchArtist()">Search</button>
@@ -54,5 +58,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
-
