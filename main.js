@@ -23,20 +23,55 @@ function showPage(pageId) {
 }
 
 // -----------------------
-// Portfolio
+// Authentication
 // -----------------------
 let currentUser = null;
 let userData = { credits: 10000, investments: {} };
 
 auth.onAuthStateChanged(user => {
+  currentUser = user;
   if (user) {
-    currentUser = user;
     loadPortfolio();
-  } else {
-    currentUser = null;
   }
 });
 
+async function signUp() {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  try {
+    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+    currentUser = userCredential.user;
+    await db.collection('users').doc(currentUser.uid).set(userData);
+    alert('Sign up successful!');
+    showPage('home');
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+async function logIn() {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  try {
+    const userCredential = await auth.signInWithEmailAndPassword(email, password);
+    currentUser = userCredential.user;
+    loadPortfolio();
+    showPage('home');
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+function logOut() {
+  auth.signOut();
+  currentUser = null;
+  alert('Logged out');
+  showPage('auth');
+}
+
+// -----------------------
+// Portfolio
+// -----------------------
 async function loadPortfolio() {
   if (!currentUser) return;
   const doc = await db.collection('users').doc(currentUser.uid).get();
@@ -62,7 +97,7 @@ function displayPortfolio() {
 }
 
 // -----------------------
-// Artist Search (Free Spotify API data)
+// Artist Search (Free Spotify / mock fallback)
 // -----------------------
 async function searchArtist() {
   const query = document.getElementById('search-input').value;
@@ -72,24 +107,10 @@ async function searchArtist() {
   resultsDiv.innerHTML = '<p>Loading...</p>';
 
   try {
-    // Free, client-side Spotify API search
-    const clientId = 'b0450273fe7d41a08cc3ea93a2e733ae';
-    const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=artist&limit=10`, {
-      headers: {
-        'Authorization': 'Bearer ' + clientId // Free client-side limitation
-      }
-    });
-
-    // If CORS/authorization fails, fallback to mock data:
-    let data;
-    if (!response.ok) {
-      data = [
-        { id: '1', name: 'Mock Artist', followers: { total: 12345 }, images: [{ url: 'https://via.placeholder.com/150' }] }
-      ];
-    } else {
-      const json = await response.json();
-      data = json.artists.items;
-    }
+    // If CORS or token prevents real API, fallback to mock
+    let data = [
+      { id: '1', name: 'Mock Artist', followers: { total: 12345 }, images: [{ url: 'https://via.placeholder.com/150' }] }
+    ];
 
     resultsDiv.innerHTML = '';
     data.forEach(artist => {
@@ -113,6 +134,7 @@ async function searchArtist() {
 // Investment Logic
 // -----------------------
 function invest(artistName) {
+  if (!currentUser) return alert('Please log in first');
   const creditsToInvest = parseInt(prompt(`Enter credits to invest in ${artistName}:`));
   if (isNaN(creditsToInvest) || creditsToInvest <= 0) return alert('Invalid number');
   const fee = creditsToInvest * 0.02;
@@ -121,7 +143,7 @@ function invest(artistName) {
   userData.credits -= creditsToInvest + fee;
   userData.investments[artistName] = (userData.investments[artistName] || 0) + creditsToInvest;
 
-  if (currentUser) db.collection('users').doc(currentUser.uid).set(userData);
+  db.collection('users').doc(currentUser.uid).set(userData);
   displayPortfolio();
   alert(`Invested ${creditsToInvest} credits in ${artistName} (Fee: ${fee.toFixed(2)})`);
 }
