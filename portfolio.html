@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music Stocks - Portfolio</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>🎵 My Portfolio</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="portfolio.html">Portfolio</a>
+      <a href="records.html">Records</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="portfolio">
+      <h2>My Investments</h2>
+      <ul id="portfolioList">
+        <li>You don’t have any investments yet.</li>
+      </ul>
+    </section>
+
+    <section class="search">
+      <h2>Search for Artists</h2>
+      <input type="text" id="searchInput" placeholder="Search Spotify for an artist...">
+      <button onclick="searchArtist()">Search</button>
+      <div id="searchResults"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
