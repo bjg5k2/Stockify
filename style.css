@@ -1,4 +1,18 @@
-/* --- Nav --- */
+/* -------------------- Global -------------------- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #e0f7eb;
+  color: #2f6b5b;
+  line-height: 1.6;
+}
+
+/* -------------------- Navigation -------------------- */
 nav {
   background: #2f6b5b;
   display: flex;
@@ -32,11 +46,12 @@ nav {
   color: white;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.3s, transform 0.2s;
 }
 
 .nav-buttons button:hover {
   background: #3d826b;
+  transform: translateY(-2px);
 }
 
 .nav-buttons button:disabled {
@@ -44,25 +59,22 @@ nav {
   cursor: default;
 }
 
-/* --- Main --- */
-body {
-  font-family: 'Poppins', sans-serif;
-  background: #e0f7eb;
-  margin: 0;
-  padding: 0;
-  color: #2f6b5b;
-}
-
+/* -------------------- Main -------------------- */
 main {
   padding: 2rem;
   max-width: 1000px;
   margin: auto;
 }
 
-.page h2 {
+h1, h2 {
   margin-bottom: 1rem;
 }
 
+section p {
+  margin-bottom: 1rem;
+}
+
+/* -------------------- Search Bar -------------------- */
 .search-bar {
   display: flex;
   gap: 0.5rem;
@@ -74,6 +86,7 @@ main {
   padding: 0.5rem 1rem;
   border-radius: 12px;
   border: 1px solid #52a78f;
+  font-size: 1rem;
 }
 
 .search-bar button {
@@ -89,25 +102,21 @@ main {
   background: #3d826b;
 }
 
-/* --- Artist Cards --- */
-#artist-results {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.artist-card {
+/* -------------------- Cards -------------------- */
+.artist-card, .portfolio-card, .top-card {
   background: #a3e4d7;
   border-radius: 16px;
   padding: 1rem;
   width: 200px;
   box-shadow: 0 3px 6px rgba(0,0,0,0.15);
   text-align: center;
-  transition: transform 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-bottom: 1rem;
 }
 
-.artist-card:hover {
+.artist-card:hover, .portfolio-card:hover, .top-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
 }
 
 .artist-card img {
@@ -124,14 +133,23 @@ button.invest-btn {
   background: #2f6b5b;
   color: white;
   cursor: pointer;
+  font-weight: 600;
 }
 
 button.invest-btn:hover {
   background: #1f4b3d;
 }
 
+/* -------------------- Flex Containers -------------------- */
+#artist-results, #portfolio-list, #top-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* -------------------- Responsive -------------------- */
 @media (max-width: 600px) {
-  .artist-card {
+  .artist-card, .portfolio-card, .top-card {
     width: 100%;
   }
   .nav-buttons {
