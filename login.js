@@ -1,42 +1,37 @@
-// login.js — handles login/signup
+// login.js
 let auth, db;
 
-try {
-  const config = window.appConfig;
-  firebase.initializeApp(config.firebase);
-  auth = firebase.auth();
-  db = firebase.firestore();
-} catch(err) {
-  console.error('Failed to initialize Firebase', err);
-  alert('Failed to initialize. Refresh the page.');
-}
+document.addEventListener('DOMContentLoaded', () => {
+  if (!window.appConfig) return alert('App config missing!');
 
-const emailInput = document.getElementById('email');
-const passwordInput = document.getElementById('password');
-
-document.getElementById('login-btn').addEventListener('click', async () => {
-  const email = emailInput.value;
-  const pass = passwordInput.value;
   try {
-    await auth.signInWithEmailAndPassword(email, pass);
-    window.location.href = 'index.html';
+    firebase.initializeApp(window.appConfig.firebase);
+    auth = firebase.auth();
+    db = firebase.firestore();
   } catch(err) {
-    alert(err.message || 'Login failed');
+    console.error('Firebase init failed', err);
+    alert('Failed to initialize Firebase');
   }
-});
 
-document.getElementById('signup-btn').addEventListener('click', async () => {
-  const email = emailInput.value;
-  const pass = passwordInput.value;
-  try {
-    const uc = await auth.createUserWithEmailAndPassword(email, pass);
-    // initialize user doc
-    await db.collection('users').doc(uc.user.uid).set({
-      balance: 10000,
-      investments: {}
-    });
-    window.location.href = 'index.html';
-  } catch(err) {
-    alert(err.message || 'Sign up failed');
-  }
+  const emailInput = document.getElementById('email');
+  const passwordInput = document.getElementById('password');
+
+  document.getElementById('login-btn').addEventListener('click', async () => {
+    try {
+      await auth.signInWithEmailAndPassword(emailInput.value, passwordInput.value);
+      window.location.href = 'index.html';
+    } catch(err) {
+      alert(err.message || 'Login failed');
+    }
+  });
+
+  document.getElementById('signup-btn').addEventListener('click', async () => {
+    try {
+      const uc = await auth.createUserWithEmailAndPassword(emailInput.value, passwordInput.value);
+      await db.collection('users').doc(uc.user.uid).set({ balance: 10000, investments: {} });
+      window.location.href = 'index.html';
+    } catch(err) {
+      alert(err.message || 'Sign up failed');
+    }
+  });
 });
