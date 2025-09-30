@@ -1,25 +1,24 @@
 let auth, db, spotifyConfig;
 
-fetch('/config')
-  .then(res => res.json())
-  .then(config => {
-    firebase.initializeApp(config.firebase);
-    auth = firebase.auth();
-    db = firebase.firestore();
-    spotifyConfig = config.spotify;
+try {
+  const config = window.appConfig;
+  firebase.initializeApp(config.firebase);
+  auth = firebase.auth();
+  db = firebase.firestore();
+  spotifyConfig = config.spotify;
 
-    auth.onAuthStateChanged(user => {
-      if (!user) window.location.href = 'index.html';
-    });
-
-    initializeApp();
-  })
-  .catch(err => {
-    console.error('Failed to load config:', err);
-    alert('Failed to initialize app. Please refresh the page.');
+  auth.onAuthStateChanged(user => {
+    if (!user) window.location.href = 'login.html';
   });
 
+  initializeApp();
+} catch(err) {
+  console.error('Failed to initialize app:', err);
+  alert('Failed to initialize app. Please refresh the page.');
+}
+
 function initializeApp() {
+  // Page switching
   window.showPage = function(pageId) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const page = document.getElementById(pageId);
@@ -27,19 +26,20 @@ function initializeApp() {
 
     if(pageId === 'portfolio') loadPortfolio();
   };
-  
+
   document.querySelectorAll('#navbar-left button[data-page]').forEach(btn => {
     btn.addEventListener('click', () => showPage(btn.dataset.page));
   });
 
   document.getElementById('logout-btn').addEventListener('click', async () => {
     await auth.signOut();
-    window.location.href = 'index.html';
+    window.location.href = 'login.html';
   });
 
   document.getElementById('search-btn').addEventListener('click', searchArtist);
 }
 
+// Portfolio
 async function loadPortfolio() {
   const user = auth.currentUser;
   if (!user) return;
@@ -70,8 +70,8 @@ function displayPortfolio(investments = {}) {
   });
 }
 
-let _spotifyToken = null;
-let _spotifyExpiry = 0;
+// Spotify search
+let _spotifyToken = null, _spotifyExpiry = 0;
 
 async function getSpotifyToken() {
   const now = Date.now();
@@ -94,7 +94,6 @@ async function getSpotifyToken() {
 async function searchArtist() {
   const q = document.getElementById('search').value;
   if (!q) return;
-
   const results = document.getElementById('results');
   results.innerHTML = '<div class="card">Searching...</div>';
 
@@ -124,8 +123,7 @@ async function searchArtist() {
         <input type="number" id="amount-${idSafe}" placeholder="Credits to invest" min="1"/>
         <button data-id="${idSafe}" data-name="${artist.name}">Invest</button>
       `;
-      const btn = card.querySelector('button');
-      btn.addEventListener('click', () => {
+      card.querySelector('button').addEventListener('click', () => {
         const amt = parseInt(document.getElementById(`amount-${idSafe}`).value, 10);
         invest(artist.name, amt);
       });
@@ -137,6 +135,7 @@ async function searchArtist() {
   }
 }
 
+// Invest
 async function invest(artistName, amount) {
   const user = auth.currentUser;
   if (!user) return alert('Please log in first');
