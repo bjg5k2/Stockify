@@ -62,3 +62,10 @@ nav button:hover {
 .invest-btn:hover {
   background-color: #267326;
 }
+
+#auth input {
+  margin: 5px;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #66cc66;
+}
