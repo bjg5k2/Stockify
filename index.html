@@ -24,23 +24,25 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBF5gzPThKD1ga_zpvtdBpiQFsexbEpZyY",
-    authDomain: "stockify-75531.firebaseapp.com",
-    projectId: "stockify-75531",
-    storageBucket: "stockify-75531.firebasestorage.app",
-    messagingSenderId: "831334536771",
-    appId: "1:831334536771:web:b142abcead4df128c826f6"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
+  let auth;
 
-  // If already logged in, go to app
-  auth.onAuthStateChanged(user => {
-    if(user) window.location.href = 'app.html';
-  });
+  fetch('/config')
+    .then(res => res.json())
+    .then(config => {
+      firebase.initializeApp(config.firebase);
+      auth = firebase.auth();
+
+      auth.onAuthStateChanged(user => {
+        if(user) window.location.href = 'app.html';
+      });
+    })
+    .catch(err => {
+      console.error('Failed to load config:', err);
+      alert('Failed to initialize app. Please refresh the page.');
+    });
 
   document.getElementById('signup-btn').addEventListener('click', async () => {
+    if (!auth) return alert('App not initialized yet');
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     try {
@@ -50,6 +52,7 @@
   });
 
   document.getElementById('login-btn').addEventListener('click', async () => {
+    if (!auth) return alert('App not initialized yet');
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     try {
