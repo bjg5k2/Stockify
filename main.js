@@ -73,13 +73,22 @@ document.addEventListener('DOMContentLoaded', () => {
   // -----------------------
   async function loadPortfolio() {
     if (!currentUser) return;
-    const doc = await db.collection('users').doc(currentUser.uid).get();
-    if (doc.exists) {
-      userData = doc.data();
-    } else {
-      await db.collection('users').doc(currentUser.uid).set(userData);
+
+    try {
+      const docRef = db.collection('users').doc(currentUser.uid);
+      const doc = await docRef.get();
+
+      if (doc.exists) {
+        userData = doc.data();  // load actual data from Firebase
+      } else {
+        userData = { credits: 10000, investments: {} };
+        await docRef.set(userData);
+      }
+
+      displayPortfolio(); // only display AFTER data is loaded
+    } catch (err) {
+      console.error('Error loading portfolio:', err);
     }
-    displayPortfolio();
   }
 
   function displayPortfolio() {
@@ -88,6 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const listDiv = document.getElementById('portfolio-list');
     listDiv.innerHTML = '';
+
     for (const [artist, credits] of Object.entries(userData.investments)) {
       const item = document.createElement('div');
       item.textContent = `${artist}: ${credits.toFixed(2)} credits`;
@@ -171,14 +181,13 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       await db.collection('users').doc(currentUser.uid).set(userData);
 
-      // Refresh portfolio if visible
-      if (document.getElementById('portfolio').style.display !== 'none') displayPortfolio();
+      // Refresh portfolio immediately
+      displayPortfolio();
 
       alert(`Invested ${creditsToInvest} credits in ${artistName} (Fee: ${fee.toFixed(2)})`);
     } catch (err) {
       console.error(err);
       alert('Error saving investment.');
-      // Revert local changes if error
       userData.credits += creditsToInvest + fee;
       userData.investments[artistName] -= creditsToInvest;
     }
