@@ -2,58 +2,47 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Music Stocks - Home</title>
+  <title>Music Stock Game</title>
   <link rel="stylesheet" href="style.css">
-
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBF5gzPThKD1ga_zpvtdBpiQFsexbEpZyY",
-      authDomain: "stockify-75531.firebaseapp.com",
-      projectId: "stockify-75531",
-      storageBucket: "stockify-75531.firebasestorage.app",
-      messagingSenderId: "831334536771",
-      appId: "1:831334536771:web:b142abcead4df128c826f6"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-  </script>
 </head>
 <body>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="portfolio.html">My Portfolio</a>
-    <a href="records.html">Records</a>
-  </nav>
+  <header>
+    <h1>Music Stock Game</h1>
+    <nav>
+      <button onclick="showPage('home')">Home</button>
+      <button onclick="showPage('portfolio')">My Portfolio</button>
+      <button onclick="showPage('trade')">Trade</button>
+    </nav>
+  </header>
 
-  <h1>Welcome to Music Stocks!</h1>
+  <!-- Login/Signup -->
+  <section id="auth-section">
+    <input id="email" type="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="signUp()">Sign Up</button>
+    <button onclick="logIn()">Log In</button>
+  </section>
 
-  <!-- Sign Up / Login Section -->
-  <div id="auth-section">
-    <h2>Sign Up / Login</h2>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
-    <div>
-      <button onclick="signUp()">Sign Up</button>
-      <button onclick="logIn()">Log In</button>
-      <button onclick="logOut()">Log Out</button>
-    </div>
-  </div>
-
-  <!-- User Section (shown after login) -->
-  <div id="user-section" style="display:none;">
-    <p>Credits: <span id="credits">0</span></p>
-
-    <h3>Invest in an Artist</h3>
-    <input type="text" id="searchArtist" placeholder="Search artist">
+  <!-- Pages -->
+  <section id="home-page" class="page">
+    <h2>Welcome!</h2>
+    <p>Search for artists and invest in their success.</p>
+    <input id="search-input" type="text" placeholder="Search artist">
     <button onclick="searchArtist()">Search</button>
+    <div id="artist-results"></div>
+  </section>
 
-    <div id="artistInfo" style="margin-top:10px;"></div>
-  </div>
+  <section id="portfolio-page" class="page" style="display:none;">
+    <h2>My Portfolio</h2>
+    <div id="portfolio-list"></div>
+  </section>
+
+  <section id="trade-page" class="page" style="display:none;">
+    <h2>Trade</h2>
+    <div id="trade-section"></div>
+  </section>
 
   <script src="script.js"></script>
 </body>
