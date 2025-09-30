@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // ---------- Firebase (compat) ----------
   const firebaseConfig = {
     apiKey: "AIzaSyBF5gzPThKD1ga_zpvtdBpiQFsexbEpZyY",
     authDomain: "stockify-75531.firebaseapp.com",
@@ -32,22 +31,17 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   function showAppUI() {
-    const authSection = document.getElementById('auth-section');
-    if (authSection) authSection.classList.add('hidden');
-    const navbar = document.getElementById('navbar');
-    if (navbar) navbar.classList.remove('hidden');
+    document.getElementById('auth-section')?.classList.add('hidden');
+    document.getElementById('navbar')?.classList.remove('hidden');
     showPage('home');
   }
 
   function showAuthUI() {
-    const authSection = document.getElementById('auth-section');
-    if (authSection) authSection.classList.remove('hidden');
-    const navbar = document.getElementById('navbar');
-    if (navbar) navbar.classList.add('hidden');
+    document.getElementById('auth-section')?.classList.remove('hidden');
+    document.getElementById('navbar')?.classList.add('hidden');
     hideAllPages();
   }
 
-  // ---------- Globals ----------
   let currentUser = null;
 
   // ---------- Auth ----------
@@ -86,6 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ---------- FIX: prevent flash ----------
   auth.onAuthStateChanged(user => {
     currentUser = user;
+    document.body.classList.remove('loading'); // <-- hide overlay
     if (user) {
       showAppUI();
       loadPortfolio();
@@ -238,25 +233,10 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) { console.error('invest error', err); alert('Error performing investment.'); }
   };
 
-  // ---------- Utilities ----------
   function escapeHtml(str) {
     if (typeof str !== 'string') return str;
     return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   }
   function escapeAttr(str) { return escapeHtml(str).replace(/"/g, '&quot;'); }
-
-  // Ensure navbar exists
-  if (!document.getElementById('navbar')) {
-    const nav = document.createElement('nav');
-    nav.id = 'navbar';
-    nav.classList.add('hidden');
-    nav.innerHTML = `
-      <button onclick="showPage('home')">Home</button>
-      <button onclick="showPage('portfolio')">Portfolio</button>
-      <button onclick="showPage('trade')">Trade</button>
-      <button onclick="logOut()">Log Out</button>
-    `;
-    document.body.insertBefore(nav, document.querySelector('.container') || document.body.firstChild);
-  }
 
 });
