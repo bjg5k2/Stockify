@@ -1,40 +1,56 @@
-/* Fonts & Reset */
-body {
-  font-family: 'Poppins', sans-serif;
-  background: #f0fff4;
-  margin: 0;
-  padding: 0;
-  color: #333;
-}
-
+/* --- Nav --- */
 nav {
-  background: #a3e4d7;
+  background: #2f6b5b;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  padding: 1rem 2rem;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  padding: 1rem 0;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
 }
 
 .nav-brand {
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #e0f7eb;
+  margin-bottom: 0.5rem;
 }
 
-.nav-buttons button {
-  padding: 0.5rem 1rem;
-  margin-left: 0.5rem;
+.nav-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.nav-buttons.center {
+  justify-content: center;
+}
+
+.nav-buttons button, .nav-buttons a button {
+  padding: 0.5rem 1.2rem;
   border-radius: 12px;
   border: none;
   background: #52a78f;
   color: white;
-  cursor: pointer;
   font-weight: 600;
+  cursor: pointer;
   transition: background 0.3s;
 }
 
 .nav-buttons button:hover {
   background: #3d826b;
+}
+
+.nav-buttons button:disabled {
+  background: #a3e4d7;
+  cursor: default;
+}
+
+/* --- Main --- */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #e0f7eb;
+  margin: 0;
+  padding: 0;
+  color: #2f6b5b;
 }
 
 main {
@@ -43,12 +59,8 @@ main {
   margin: auto;
 }
 
-.page {
-  margin-bottom: 3rem;
-}
-
-h1, h2 {
-  color: #2f6b5b;
+.page h2 {
+  margin-bottom: 1rem;
 }
 
 .search-bar {
@@ -61,7 +73,7 @@ h1, h2 {
   flex: 1;
   padding: 0.5rem 1rem;
   border-radius: 12px;
-  border: 1px solid #ccc;
+  border: 1px solid #52a78f;
 }
 
 .search-bar button {
@@ -70,36 +82,35 @@ h1, h2 {
   border: none;
   background: #52a78f;
   color: white;
-  cursor: pointer;
   font-weight: 600;
-  transition: background 0.3s;
 }
 
 .search-bar button:hover {
   background: #3d826b;
 }
 
-#artist-results, #top-list {
+/* --- Artist Cards --- */
+#artist-results {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
 }
 
-.artist-card, .portfolio-card, .top-card {
-  background: #e0f7eb;
+.artist-card {
+  background: #a3e4d7;
   border-radius: 16px;
   padding: 1rem;
   width: 200px;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
   text-align: center;
   transition: transform 0.2s;
 }
 
-.artist-card:hover, .portfolio-card:hover, .top-card:hover {
+.artist-card:hover {
   transform: translateY(-5px);
 }
 
-.artist-card img, .top-card img {
+.artist-card img {
   width: 100%;
   border-radius: 12px;
   margin-bottom: 0.5rem;
@@ -110,17 +121,17 @@ button.invest-btn {
   padding: 0.5rem;
   border: none;
   border-radius: 12px;
-  background: #52a78f;
+  background: #2f6b5b;
   color: white;
   cursor: pointer;
 }
 
 button.invest-btn:hover {
-  background: #3d826b;
+  background: #1f4b3d;
 }
 
 @media (max-width: 600px) {
-  .artist-card, .portfolio-card, .top-card {
+  .artist-card {
     width: 100%;
   }
   .nav-buttons {
