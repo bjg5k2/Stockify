@@ -1,14 +1,17 @@
 // ----- Firebase Setup -----
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
+  apiKey: "AIzaSyBF5gzPThKD1ga_zpvtdBpiQFsexbEpZyY",
   authDomain: "stockify-75531.firebaseapp.com",
   projectId: "stockify-75531",
-  storageBucket: "stockify-75531.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  storageBucket: "stockify-75531.firebasestorage.app",
+  messagingSenderId: "831334536771",
+  appId: "1:831334536771:web:b142abcead4df128c826f6"
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
+
+// ----- Track Current User -----
+let currentUser = null;
 
 // ----- Login / Signup -----
 async function signUp() {
@@ -17,8 +20,6 @@ async function signUp() {
   try {
     await auth.createUserWithEmailAndPassword(email, password);
     alert("Signed up!");
-    document.getElementById("auth-section").style.display = "none";
-    initPortfolio();
   } catch (err) {
     alert(err.message);
   }
@@ -30,30 +31,37 @@ async function logIn() {
   try {
     await auth.signInWithEmailAndPassword(email, password);
     alert("Logged in!");
-    document.getElementById("auth-section").style.display = "none";
-    initPortfolio();
   } catch (err) {
     alert(err.message);
   }
 }
 
+// Update user state
 auth.onAuthStateChanged(user => {
+  currentUser = user;
   if (user) {
     console.log("Logged in as:", user.email);
     document.getElementById("auth-section").style.display = "none";
     initPortfolio();
+    showPage("home");
+  } else {
+    document.getElementById("auth-section").style.display = "block";
   }
 });
 
 // ----- Page Navigation -----
 function showPage(pageId) {
+  if (!currentUser) {
+    alert("Please log in to access this page.");
+    return;
+  }
   document.querySelectorAll(".page").forEach(p => p.style.display = "none");
   document.getElementById(`${pageId}-page`).style.display = "block";
 }
 
 // ----- Spotify API -----
-const clientId = "YOUR_CLIENT_ID";
-const clientSecret = "YOUR_CLIENT_SECRET";
+const clientId = "b0450273fe7d41a08cc3ea93a2e733ae";
+const clientSecret = "5b22a59a771b4f8885f887958bfddeb2";
 
 async function getToken() {
   const resp = await fetch("https://accounts.spotify.com/api/token", {
@@ -103,11 +111,12 @@ let userPortfolio = {}; // key: artistId, value: {name, credits}
 let userCredits = 10000;
 
 function initPortfolio() {
-  // Initialize portfolio in memory; later you can persist in localStorage
+  // Initialize portfolio in memory
   updatePortfolioUI();
 }
 
 function invest(artistId, artistName) {
+  if (!currentUser) return alert("Please log in to invest.");
   const amount = prompt(`You have ${userCredits} credits. Enter amount to invest in ${artistName}:`);
   const investAmount = parseInt(amount);
   if (isNaN(investAmount) || investAmount <= 0) return alert("Enter a valid number");
