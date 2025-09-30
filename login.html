@@ -1,65 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stockify - Login</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stockify — Login</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<div class="auth-card">
-  <h2>Welcome to Stockify</h2>
-  <p>Sign up or log in to access your music investments</p>
-  <input type="email" id="email" placeholder="Email" required />
-  <input type="password" id="password" placeholder="Password" required />
-  <div class="auth-actions">
-    <button id="signup-btn">Sign Up</button>
-    <button class="secondary" id="login-btn">Log In</button>
+  <div id="login-page" class="auth-page">
+    <div class="auth-card">
+      <h2>Welcome to Stockify</h2>
+      <p>Sign in to manage your music investments</p>
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <div class="auth-actions">
+        <button id="login-btn">Log In</button>
+        <button id="signup-btn" class="secondary">Sign Up</button>
+      </div>
+    </div>
   </div>
-</div>
 
-<!-- Firebase Scripts -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-<script>
-  // Firebase Config
-  const firebaseConfig = {
-    apiKey: "AIzaSyBF5gzPThKD1ga_zpvtdBpiQFsexbEpZyY",
-    authDomain: "stockify-75531.firebaseapp.com",
-    projectId: "stockify-75531",
-    storageBucket: "stockify-75531.firebasestorage.app",
-    messagingSenderId: "831334536771",
-    appId: "1:831334536771:web:b142abcead4df128c826f6"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-
-  // Redirect if already logged in
-  auth.onAuthStateChanged(user => {
-    if(user) window.location.href = 'index.html';
-  });
-
-  document.getElementById('signup-btn').addEventListener('click', async () => {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    try {
-      await auth.createUserWithEmailAndPassword(email,password);
-      window.location.href = 'index.html';
-    } catch(err){ alert(err.message); }
-  });
-
-  document.getElementById('login-btn').addEventListener('click', async () => {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    try {
-      await auth.signInWithEmailAndPassword(email,password);
-      window.location.href = 'index.html';
-    } catch(err){ alert(err.message); }
-  });
-</script>
-
+  <!-- Firebase & Config -->
+  <script src="config.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="login.js" defer></script>
 </body>
 </html>
