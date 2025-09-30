@@ -31,6 +31,7 @@
   </nav>
 
   <h1>Welcome to Music Stocks!</h1>
+
   <div id="auth-section">
     <h2>Sign Up / Login</h2>
     <input type="email" id="email" placeholder="Email">
@@ -42,11 +43,16 @@
 
   <div id="user-section" style="display:none;">
     <p>Credits: <span id="credits">0</span></p>
-    <input type="text" id="artistName" placeholder="Artist Name">
-    <input type="number" id="investAmount" placeholder="Credits to invest">
-    <button onclick="invest()">Invest</button>
+    
+    <h3>Invest in an Artist</h3>
+    <input type="text" id="searchArtist" placeholder="Search artist">
+    <button onclick="searchArtist()">Search</button>
+
+    <div id="artistInfo" style="margin-top:10px;"></div>
   </div>
 
   <script src="script.js"></script>
 </body>
 </html>
+
+
