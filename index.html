@@ -1,54 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Stockify</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <!-- Authentication Page -->
-  <div id="auth" class="page auth-page">
-    <div class="auth-card">
-      <h1>Welcome to <span class="brand">Stockify</span></h1>
-      <p class="tagline">Invest in the music you love</p>
-      <input type="email" id="email" placeholder="Email">
-      <input type="password" id="password" placeholder="Password">
-      <div class="auth-buttons">
-        <button onclick="signUp()">Sign Up</button>
-        <button onclick="logIn()">Log In</button>
-      </div>
-    </div>
+  <!-- Login / Signup Section -->
+  <div id="auth-section" class="page active">
+    <h1>Welcome to Stockify</h1>
+    <p>Sign up or log in to start trading your favorite artists.</p>
+
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+
+    <button onclick="signUp()">Sign Up</button>
+    <button onclick="logIn()">Log In</button>
   </div>
+
+  <!-- Navbar (hidden until logged in) -->
+  <nav id="navbar" class="hidden">
+    <button onclick="showPage('home')">Home</button>
+    <button onclick="showPage('portfolio')">Portfolio</button>
+    <button onclick="showPage('trade')">Trade</button>
+    <button onclick="logOut()">Log Out</button>
+  </nav>
 
   <!-- Home Page -->
-  <div id="home" class="page" style="display:none;">
-    <header>
-      <h1 class="brand">Stockify</h1>
-      <button class="logout" onclick="logOut()">Log Out</button>
-    </header>
-
-    <!-- Portfolio Section -->
-    <section class="portfolio-section">
-      <h2>Your Portfolio</h2>
-      <div id="portfolio-summary" class="card"></div>
-      <div id="portfolio-list" class="grid"></div>
-    </section>
-
-    <!-- Search Section -->
-    <section class="search-section">
-      <h2>Search Artists</h2>
-      <div class="search-bar">
-        <input type="text" id="search-input" placeholder="Search for an artist">
-        <button onclick="searchArtist()">Search</button>
-      </div>
-      <div id="artist-results" class="grid"></div>
-    </section>
+  <div id="home" class="page hidden">
+    <h2>Home</h2>
+    <p>Welcome to Stockify! Start trading your favorite artists today.</p>
   </div>
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <!-- Portfolio Page -->
+  <div id="portfolio" class="page hidden">
+    <h2>Your Portfolio</h2>
+    <p id="balance">Balance: 0 credits</p>
+    <div id="investments"></div>
+  </div>
+
+  <!-- Trade Page -->
+  <div id="trade" class="page hidden">
+    <h2>Trade Artists</h2>
+    <input type="text" id="search" placeholder="Search for an artist" />
+    <button onclick="searchArtist()">Search</button>
+    <div id="results"></div>
+  </div>
+
+  <script type="module" src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"></script>
   <script src="main.js"></script>
 </body>
 </html>
