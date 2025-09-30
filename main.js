@@ -3,7 +3,7 @@ let investments = {};
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  // Page switcher with fade
+  // Page switcher
   window.showPage = function(pageId) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const page = document.getElementById(pageId);
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(pageId==='portfolio') displayPortfolio();
   };
 
-  // Attach navbar buttons
+  // Navbar buttons
   document.querySelectorAll('#navbar button').forEach(btn=>{
     btn.addEventListener('click', ()=>showPage(btn.dataset.page));
   });
