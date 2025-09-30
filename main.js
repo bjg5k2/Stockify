@@ -14,20 +14,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!user) window.location.href = 'login.html';
   });
 
-  // Navbar buttons
-  document.querySelectorAll('#navbar-left button[data-page]').forEach(btn => {
-    btn.addEventListener('click', () => showPage(btn.dataset.page));
-  });
+  // ---------- Navbar buttons ----------
+  const navbarLeft = document.getElementById('navbar-left');
+  if (navbarLeft) {
+    navbarLeft.addEventListener('click', (e) => {
+      if (e.target.tagName === 'BUTTON' && e.target.dataset.page) {
+        showPage(e.target.dataset.page);
+      }
+    });
+  }
 
-  document.getElementById('logout-btn').addEventListener('click', async () => {
-    await auth.signOut();
-    window.location.href = 'login.html';
-  });
+  const logoutBtn = document.getElementById('logout-btn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', async () => {
+      await auth.signOut();
+      window.location.href = 'login.html';
+    });
+  }
 
-  document.getElementById('search-btn').addEventListener('click', searchArtist);
+  const searchBtn = document.getElementById('search-btn');
+  if (searchBtn) {
+    searchBtn.addEventListener('click', searchArtist);
+  }
 });
 
-// Show/hide pages
+// ---------- Page switching ----------
 function showPage(pageId) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const page = document.getElementById(pageId);
@@ -36,13 +47,14 @@ function showPage(pageId) {
   if (pageId === 'portfolio') loadPortfolio();
 }
 
-// Portfolio
+// ---------- Portfolio ----------
 async function loadPortfolio() {
   const user = auth.currentUser;
   if (!user) return;
   const ref = db.collection('users').doc(user.uid);
   const snap = await ref.get();
   let data = snap.exists ? snap.data() : { balance: 10000, investments: {} };
+
   if (!data.investments) data.investments = {};
   document.getElementById('balance').innerText = `Balance: ${data.balance} credits`;
   displayPortfolio(data.investments);
@@ -64,10 +76,11 @@ function displayPortfolio(investments = {}) {
   });
 }
 
-// Spotify
+// ---------- Spotify ----------
 async function getSpotifyToken() {
   const now = Date.now();
   if (_spotifyToken && now < _spotifyExpiry - 5000) return _spotifyToken;
+
   const res = await fetch('https://accounts.spotify.com/api/token', {
     method: 'POST',
     headers: {
@@ -82,7 +95,7 @@ async function getSpotifyToken() {
   return _spotifyToken;
 }
 
-// Search & invest
+// ---------- Search & invest ----------
 async function searchArtist() {
   const q = document.getElementById('search').value;
   if (!q) return;
