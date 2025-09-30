@@ -1,37 +1,37 @@
-// login.js
 let auth, db;
 
 document.addEventListener('DOMContentLoaded', () => {
-  if (!window.appConfig) return alert('App config missing!');
+  firebase.initializeApp(window.appConfig.firebase);
+  auth = firebase.auth();
+  db = firebase.firestore();
 
-  try {
-    firebase.initializeApp(window.appConfig.firebase);
-    auth = firebase.auth();
-    db = firebase.firestore();
-  } catch(err) {
-    console.error('Firebase init failed', err);
-    alert('Failed to initialize Firebase');
-  }
+  const loginBtn = document.getElementById('login-btn');
+  const signupBtn = document.getElementById('signup-btn');
 
-  const emailInput = document.getElementById('email');
-  const passwordInput = document.getElementById('password');
-
-  document.getElementById('login-btn').addEventListener('click', async () => {
+  loginBtn.addEventListener('click', async () => {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
     try {
-      await auth.signInWithEmailAndPassword(emailInput.value, passwordInput.value);
+      await auth.signInWithEmailAndPassword(email, password);
       window.location.href = 'index.html';
-    } catch(err) {
-      alert(err.message || 'Login failed');
+    } catch (err) {
+      alert(err.message || 'Login error');
     }
   });
 
-  document.getElementById('signup-btn').addEventListener('click', async () => {
+  signupBtn.addEventListener('click', async () => {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
     try {
-      const uc = await auth.createUserWithEmailAndPassword(emailInput.value, passwordInput.value);
-      await db.collection('users').doc(uc.user.uid).set({ balance: 10000, investments: {} });
+      const uc = await auth.createUserWithEmailAndPassword(email, password);
+      // initialize user doc
+      await db.collection('users').doc(uc.user.uid).set({
+        balance: 10000,
+        investments: {}
+      });
       window.location.href = 'index.html';
-    } catch(err) {
-      alert(err.message || 'Sign up failed');
+    } catch (err) {
+      alert(err.message || 'Sign up error');
     }
   });
 });
