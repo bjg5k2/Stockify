@@ -51,7 +51,7 @@ nav#navbar button {
 nav#navbar button:hover { background: var(--green-700); }
 
 .container { max-width: 1100px; margin: 24px auto; padding: 0 18px; }
-.hidden { display: none !important; }
+
 .page {
   display: none;
   opacity: 0;
