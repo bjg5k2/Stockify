@@ -1,71 +1,85 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #f0fff0;
-  color: #004d00;
+  background-color: #f4fff4;
   margin: 0;
   padding: 0;
 }
 
 header {
-  background-color: #b2fab4;
+  background-color: #66cc66;
   padding: 20px;
   text-align: center;
   border-bottom-left-radius: 15px;
   border-bottom-right-radius: 15px;
 }
 
+header h1 {
+  margin: 0;
+  color: white;
+}
+
+nav {
+  margin-top: 10px;
+}
+
 nav button {
-  margin: 5px;
+  margin: 0 10px;
   padding: 10px 20px;
   border-radius: 10px;
   border: none;
-  background-color: #66cc66;
-  color: white;
-  font-weight: bold;
+  background-color: #99ff99;
   cursor: pointer;
+  font-weight: bold;
 }
 
 nav button:hover {
-  background-color: #4caf50;
+  background-color: #88ee88;
+}
+
+main {
+  padding: 20px;
 }
 
 .page {
-  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+input {
+  margin: 5px 0;
+  padding: 10px;
+  width: 90%;
+  max-width: 400px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+button.invest-btn {
+  margin-top: 5px;
+  padding: 5px 10px;
+  background-color: #66cc66;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button.invest-btn:hover {
+  background-color: #55bb55;
 }
 
 .artist-card {
   display: inline-block;
-  width: 150px;
+  width: 180px;
   margin: 10px;
-  text-align: center;
-  background-color: #e6ffe6;
-  border-radius: 10px;
   padding: 10px;
+  border: 1px solid #99ff99;
+  border-radius: 10px;
+  background-color: white;
+  text-align: center;
 }
-
 .artist-card img {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-}
-
-.invest-btn {
-  margin-top: 10px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  border: none;
-  background-color: #339933;
-  color: white;
-  cursor: pointer;
-}
-
-.invest-btn:hover {
-  background-color: #267326;
-}
-
-#auth input {
-  margin: 5px;
-  padding: 8px;
-  border-radius: 5px;
-  border: 1px solid #66cc66;
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
 }
