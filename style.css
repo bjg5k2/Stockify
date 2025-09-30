@@ -34,9 +34,24 @@ nav button:hover {
   padding: 1em;
 }
 
-#artist-results img {
+.artist-card {
+  display: inline-block;
+  border: 1px solid #90d080;
+  border-radius: 15px;
+  padding: 10px;
+  margin: 10px;
+  background: #e0ffe0;
+  text-align: center;
+  width: 150px;
+}
+
+.artist-card img {
   width: 100px;
   height: 100px;
-  border-radius: 15px;
-  margin-right: 10px;
+  border-radius: 10px;
 }
+
+#portfolio-list div {
+  margin-bottom: 10px;
+}
+
