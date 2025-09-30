@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Header/Navbar -->
   <header>
     <h1>Stockify</h1>
     <nav id="navbar">
@@ -20,11 +21,9 @@
   </header>
 
   <div class="container">
+    <!-- Pages -->
     <div id="home" class="page active section">
-      <div class="card">
-        <h2>Welcome to Stockify</h2>
-        <p>Invest in your favorite artists and build your portfolio!</p>
-      </div>
+      <div class="card"><h2>Welcome to Stockify</h2><p>Invest your credits in your favorite artists!</p></div>
     </div>
 
     <div id="portfolio" class="page hidden section">
@@ -41,10 +40,12 @@
     </div>
   </div>
 
-  <script src="config.js" defer></script>
+  <!-- Firebase compat -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <script src="config.js" defer></script>
   <script src="main.js" defer></script>
 </body>
 </html>
