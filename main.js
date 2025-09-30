@@ -1,10 +1,6 @@
-/* main.js — Stockify (restore stable behavior)
-   Expects index.html to include Firebase compat scripts:
-   firebase-app-compat.js, firebase-auth-compat.js, firebase-firestore-compat.js
-*/
+/* main.js — Stockify (ROI update, artist ID tracking) */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // ---------- Firebase (compat) ----------
   const firebaseConfig = {
     apiKey: "AIzaSyBF5gzPThKD1ga_zpvtdBpiQFsexbEpZyY",
     authDomain: "stockify-75531.firebaseapp.com",
@@ -18,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  // ---------- UI helpers ----------
   function hideAllPages() {
     document.querySelectorAll('.page').forEach(el => {
       el.classList.add('hidden');
@@ -32,26 +27,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (el) {
       el.classList.remove('hidden');
       el.classList.add('active');
-      // If portfolio shown, refresh
-      if (pageId === 'portfolio') {
-        loadPortfolio(); // ensure latest
-      }
+      if (pageId === 'portfolio') loadPortfolio();
     }
   };
 
   function showAppUI() {
-    // hide auth, show header/navbar and home
     const authSection = document.getElementById('auth-section');
     if (authSection) authSection.classList.add('hidden');
-
-    const header = document.querySelector('header');
-    if (!header) {
-      // create a simple header if none present
-      const h = document.createElement('header');
-      h.innerHTML = `<h1>Stockify</h1>`;
-      document.body.insertBefore(h, document.body.firstChild);
-    }
-
     const navbar = document.getElementById('navbar');
     if (navbar) navbar.classList.remove('hidden');
     showPage('home');
@@ -68,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
     hideAllPages();
   }
 
-  // ---------- Globals ----------
   let currentUser = null;
 
   // ---------- Auth ----------
@@ -78,7 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const uc = await auth.createUserWithEmailAndPassword(email, password);
       currentUser = uc.user;
-      // initialize user doc
       await db.collection('users').doc(currentUser.uid).set({
         balance: 10000,
         investments: {}
@@ -109,7 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
     showAuthUI();
   };
 
-  // Keep UI in sync if user already signed in
   auth.onAuthStateChanged(user => {
     currentUser = user;
     if (user) {
@@ -126,48 +105,49 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const ref = db.collection('users').doc(currentUser.uid);
       const snap = await ref.get();
-      let data = {};
-      if (snap.exists) {
-        data = snap.data() || {};
-      } else {
-        data = { balance: 10000, investments: {} };
-        await ref.set(data);
-      }
-
-      // safe defaults
+      let data = snap.exists ? (snap.data() || {}) : { balance: 10000, investments: {} };
       if (!data.investments) data.investments = {};
       if (typeof data.balance !== 'number') data.balance = Number(data.balance) || 10000;
 
-      // update UI
-      const balEl = document.getElementById('balance');
-      if (balEl) balEl.innerText = `Balance: ${data.balance} credits`;
-
-      displayPortfolio(data.investments);
+      document.getElementById('balance').innerText = `Balance: ${data.balance} credits`;
+      await displayPortfolio(data.investments);
     } catch (err) {
       console.error('loadPortfolio error', err);
     }
   }
 
-  function displayPortfolio(investments = {}) {
+  async function displayPortfolio(investments = {}) {
     const container = document.getElementById('investments');
     if (!container) return;
     container.innerHTML = '';
-    // ensure object
-    investments = investments || {};
+
     const entries = Object.entries(investments);
-    if (entries.length === 0) {
+    if (!entries.length) {
       container.innerHTML = `<div class="card">No investments yet.</div>`;
       return;
     }
-    entries.forEach(([artist, amt]) => {
-      const d = document.createElement('div');
-      d.className = 'investment-item card';
-      d.innerHTML = `<div>${escapeHtml(artist)}</div><div><strong>${Number(amt).toLocaleString()} credits</strong></div>`;
-      container.appendChild(d);
-    });
+
+    for (const [artistId, inv] of entries) {
+      const currentFollowers = await getArtistFollowers(artistId);
+      const followersAtPurchase = inv.followersAtPurchase || 1;
+      const roi = ((currentFollowers - followersAtPurchase) / followersAtPurchase) * inv.amount;
+
+      const card = document.createElement('div');
+      card.className = 'investment-item card';
+      card.innerHTML = `
+        <div>${escapeHtml(inv.artistName)}</div>
+        <div>
+          <strong>${Number(inv.amount).toLocaleString()} credits</strong>
+          <span style="color:${roi>=0?'green':'red'}; margin-left:8px;">
+            (${roi>=0?'+':''}${roi.toFixed(0)} ROI)
+          </span>
+        </div>
+      `;
+      container.appendChild(card);
+    }
   }
 
-  // ---------- Spotify (client credentials; in-browser) ----------
+  // ---------- Spotify ----------
   const SPOTIFY_CLIENT_ID = "b0450273fe7d41a08cc3ea93a2e733ae";
   const SPOTIFY_CLIENT_SECRET = "5b22a59a771b4f8885f887958bfddeb2";
   let _spotifyToken = null;
@@ -175,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function getSpotifyToken() {
     const now = Date.now();
-    if (_spotifyToken && now < _spotifyTokenExpiry - 5000) return _spotifyToken; // small buffer
+    if (_spotifyToken && now < _spotifyTokenExpiry - 5000) return _spotifyToken;
     try {
       const res = await fetch('https://accounts.spotify.com/api/token', {
         method: 'POST',
@@ -195,7 +175,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Expose searchArtist globally
+  async function getArtistFollowers(artistId) {
+    try {
+      const token = await getSpotifyToken();
+      const res = await fetch(`https://api.spotify.com/v1/artists/${artistId}`, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const json = await res.json();
+      return json.followers?.total || 0;
+    } catch (err) {
+      console.error('getArtistFollowers error', err);
+      return 0;
+    }
+  }
+
   window.searchArtist = async function() {
     const q = (document.getElementById('search') || {}).value;
     if (!q) return;
@@ -232,8 +225,8 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         const btn = card.querySelector('button');
         btn.addEventListener('click', () => {
-          const amt = document.getElementById(`amount-${idSafe}`).value;
-          window.invest(artist.name, parseInt(amt, 10));
+          const amt = parseInt(document.getElementById(`amount-${idSafe}`).value, 10);
+          window.invest(artist.id, artist.name, amt);
         });
         results.appendChild(card);
       });
@@ -243,9 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // ---------- Invest ----------
-  // artistName string, amount number
-  window.invest = async function(artistName, amount) {
+  window.invest = async function(artistId, artistName, amount) {
     if (!currentUser) return alert('Please log in first');
     if (!amount || amount <= 0) return alert('Enter a valid amount');
 
@@ -254,20 +245,28 @@ document.addEventListener('DOMContentLoaded', () => {
       const snap = await ref.get();
       const data = snap.exists ? (snap.data() || {}) : { balance: 10000, investments: {} };
 
-      const balance = Number(data.balance || 0);
-      const investments = data.investments || {};
+      let balance = Number(data.balance || 0);
+      let investments = data.investments || {};
 
       const fee = Math.ceil(amount * 0.02);
       const totalCost = amount + fee;
       if (balance < totalCost) return alert('Not enough balance');
 
-      const newBalance = balance - totalCost;
-      investments[artistName] = (investments[artistName] || 0) + amount;
+      balance -= totalCost;
 
-      await ref.update({ balance: newBalance, investments });
-      // Update UI
+      if (!investments[artistId]) {
+        investments[artistId] = { artistName, amount, followersAtPurchase: 0 };
+      } else {
+        investments[artistId].amount += amount;
+      }
+
+      await ref.update({ balance, investments });
+
+      const followers = await getArtistFollowers(artistId);
+      investments[artistId].followersAtPurchase = followers;
+      await ref.update({ investments });
+
       loadPortfolio();
-      // Optionally switch to portfolio view:
       showPage('portfolio');
       alert(`Invested ${amount} credits in ${artistName} (fee ${fee})`);
     } catch (err) {
@@ -276,7 +275,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // ---------- Utilities ----------
   function escapeHtml(str) {
     if (typeof str !== 'string') return str;
     return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
@@ -285,8 +283,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return escapeHtml(str).replace(/"/g, '&quot;');
   }
 
-  // Initial UI state
-  // Ensure navbar exists (if not, create a simple one)
   if (!document.getElementById('navbar')) {
     const nav = document.createElement('nav');
     nav.id = 'navbar';
@@ -300,8 +296,5 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.insertBefore(nav, document.querySelector('.container') || document.body.firstChild);
   }
 
-  // Show auth UI initially (if no user)
-  if (!auth.currentUser) {
-    showAuthUI();
-  }
+  if (!auth.currentUser) showAuthUI();
 });
