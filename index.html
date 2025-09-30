@@ -1,66 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stockify - Login</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stockify</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <header>
+    <h1>Stockify</h1>
+    <nav id="navbar">
+      <div id="navbar-left">
+        <button data-page="home">Home</button>
+        <button data-page="portfolio">Portfolio</button>
+        <button data-page="trade">Trade</button>
+      </div>
+      <button id="logout-btn">Log Out</button>
+    </nav>
+  </header>
 
-<div class="auth-card">
-  <h2>Welcome to Stockify</h2>
-  <p>Sign up or log in to access your music investments</p>
-  <input type="email" id="email" placeholder="Email" required />
-  <input type="password" id="password" placeholder="Password" required />
-  <div class="auth-actions">
-    <button id="signup-btn">Sign Up</button>
-    <button class="secondary" id="login-btn">Log In</button>
+  <div class="container">
+    <!-- Home -->
+    <div id="home" class="page active section">
+      <div class="card">
+        <h2>Welcome to Stockify</h2>
+        <p>Invest in your favorite artists and build your portfolio!</p>
+      </div>
+    </div>
+
+    <!-- Portfolio -->
+    <div id="portfolio" class="page hidden section">
+      <h2>Your Portfolio</h2>
+      <div id="balance">Balance: 0 credits</div>
+      <div id="investments"></div>
+    </div>
+
+    <!-- Trade -->
+    <div id="trade" class="page hidden section">
+      <h2>Trade Artists</h2>
+      <input type="text" id="search" placeholder="Search for an artist" />
+      <button id="search-btn">Search</button>
+      <div id="results" class="grid"></div>
+    </div>
   </div>
-</div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-<script>
-  let auth;
-
-  fetch('/config')
-    .then(res => res.json())
-    .then(config => {
-      firebase.initializeApp(config.firebase);
-      auth = firebase.auth();
-
-      auth.onAuthStateChanged(user => {
-        if(user) window.location.href = 'app.html';
-      });
-    })
-    .catch(err => {
-      console.error('Failed to load config:', err);
-      alert('Failed to initialize app. Please refresh the page.');
-    });
-
-  document.getElementById('signup-btn').addEventListener('click', async () => {
-    if (!auth) return alert('App not initialized yet');
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    try {
-      await auth.createUserWithEmailAndPassword(email,password);
-      window.location.href = 'app.html';
-    } catch(err){ alert(err.message); }
-  });
-
-  document.getElementById('login-btn').addEventListener('click', async () => {
-    if (!auth) return alert('App not initialized yet');
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    try {
-      await auth.signInWithEmailAndPassword(email,password);
-      window.location.href = 'app.html';
-    } catch(err){ alert(err.message); }
-  });
-</script>
-
+  <!-- Firebase & Config -->
+  <script src="config.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="main.js" defer></script>
 </body>
 </html>
