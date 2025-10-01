@@ -8,9 +8,24 @@
 </head>
 <body>
 
+  <!-- Auth Section -->
+  <div id="auth-section" class="page active">
+    <div class="auth-card">
+      <h2>Welcome to Stockify</h2>
+      <p>Sign up or log in to manage your music investments</p>
+      <input type="email" placeholder="Email" required />
+      <input type="password" placeholder="Password" required />
+      <div class="auth-actions">
+        <button onclick="signUp()">Sign Up</button>
+        <button class="secondary" onclick="logIn()">Log In</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header / Navbar -->
   <header>
     <h1>Stockify</h1>
-    <nav id="navbar">
+    <nav id="navbar" class="hidden">
       <div id="navbar-left">
         <button data-page="home">Home</button>
         <button data-page="portfolio">Portfolio</button>
@@ -20,33 +35,40 @@
     </nav>
   </header>
 
+  <!-- Main Content -->
   <div class="container">
-    <div id="home" class="page active">
+
+    <!-- Home -->
+    <div id="home" class="page hidden section">
       <div class="card">
         <h2>Welcome to Stockify</h2>
-        <p>Invest your credits in your favorite artists!</p>
+        <p>Invest your credits in your favorite artists and build your portfolio!</p>
       </div>
     </div>
 
-    <div id="portfolio" class="page">
+    <!-- Portfolio -->
+    <div id="portfolio" class="page hidden section">
       <h2>Your Portfolio</h2>
       <div id="balance">Balance: 0 credits</div>
       <div id="investments"></div>
     </div>
 
-    <div id="trade" class="page">
+    <!-- Trade -->
+    <div id="trade" class="page hidden section">
       <h2>Trade Artists</h2>
       <input type="text" id="search" placeholder="Search for an artist" />
       <button id="search-btn">Search</button>
       <div id="results" class="grid"></div>
     </div>
+
   </div>
 
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-  <script src="config.js"></script>
+  <!-- Main JS -->
   <script src="main.js"></script>
 </body>
 </html>
